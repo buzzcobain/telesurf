@@ -2,12 +2,12 @@
   "name": "telesurf-browser",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test:ui": "playwright test",
+    "test:ui": "playwright test tests/browser.spec.js",
+    "test:regression": "playwright test tests/regression.spec.js",
     "test:unit": "jest tests/utils.test.js",
-    "test": "npm run test:unit && npm run test:ui"
+    "test": "npm run test:unit && npm run test:ui && npm run test:regression"
   },
   "keywords": [],
   "author": "",
