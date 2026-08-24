@@ -35,7 +35,7 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   
   view.webContents.on('did-finish-load', () => {
     applyTuiTheme(view.webContents);
-    if (winState.activeTabId === tabId) {
+    if (winState.activeTabId === tabId && winState.window && !winState.window.isDestroyed()) {
       winState.window.webContents.send('url-updated', view.webContents.getURL());
     }
   });
@@ -43,13 +43,15 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   view.webContents.on('dom-ready', () => applyTuiTheme(view.webContents));
   
   view.webContents.on('did-navigate', (event, navUrl) => {
-    if (winState.activeTabId === tabId) {
+    if (winState.activeTabId === tabId && winState.window && !winState.window.isDestroyed()) {
       winState.window.webContents.send('url-updated', navUrl);
     }
   });
   
   view.webContents.on('page-title-updated', (event, title) => {
-    winState.window.webContents.send('tab-updated', { id: tabId, title, url: view.webContents.getURL() });
+    if (winState.window && !winState.window.isDestroyed()) {
+      winState.window.webContents.send('tab-updated', { id: tabId, title, url: view.webContents.getURL() });
+    }
   });
 
   view.webContents.setUserAgent(cleanUA);
@@ -60,7 +62,7 @@ function createTab(winId, url = 'https://duckduckgo.com') {
 
 function switchTab(winId, tabId) {
   const winState = windows.get(winId);
-  if (!winState || !winState.tabs.has(tabId)) return;
+  if (!winState || !winState.tabs.has(tabId) || winState.window.isDestroyed()) return;
   
   winState.activeTabId = tabId;
   const view = winState.tabs.get(tabId);
@@ -231,12 +233,7 @@ ipcMain.on('navigate', (event, input) => {
   const view = getActiveView(event.sender.getOwnerBrowserWindow().id);
   if (!view) return;
 
-  let finalUrl = input.trim();
-  if (finalUrl.includes(' ') || (!finalUrl.includes('.') && !finalUrl.startsWith('localhost') && !finalUrl.startsWith('file://'))) {
-    finalUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(finalUrl);
-  } else if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://') && !finalUrl.startsWith('file://')) {
-    finalUrl = 'https://' + finalUrl;
-  }
+  const finalUrl = require('./utils.js').parseSearchInput(input);
   view.webContents.setUserAgent(cleanUA);
   view.webContents.loadURL(finalUrl, { userAgent: cleanUA });
 });

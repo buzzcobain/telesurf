@@ -4,13 +4,18 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "electron test.js",
-    "start": "electron ."
+    "start": "electron .",
+    "test:ui": "playwright test",
+    "test:unit": "jest tests/utils.test.js",
+    "test": "npm run test:unit && npm run test:ui"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^43.4.1"
+    "@playwright/test": "^1.62.1",
+    "electron": "^43.4.1",
+    "jest": "^30.4.2",
+    "playwright": "^1.62.1"
   }
 }
