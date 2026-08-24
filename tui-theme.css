@@ -1,0 +1,103 @@
+/* TUI Theme - Vibrant & Colorful */
+
+* {
+  font-family: "Courier New", Courier, monospace !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  letter-spacing: 0 !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Deep space background, high contrast white text */
+body {
+  background-color: #1A1A24 !important;
+  color: #F8F8F2 !important;
+}
+
+/* Force backgrounds and add structural borders */
+div, section, article, nav, header, footer, main, aside, ul, form {
+  background-color: #1A1A24 !important;
+  color: #F8F8F2 !important;
+  border: 1px solid #44475A !important; /* Subtle box around every block */
+  padding: 4px !important;
+  margin: 2px !important;
+}
+
+/* Links (Cyan - passes WCAG contrast on #1A1A24) */
+a {
+  color: #8BE9FD !important;
+  text-decoration: underline !important;
+}
+a:hover {
+  background-color: #8BE9FD !important;
+  color: #1A1A24 !important;
+  text-decoration: none !important;
+}
+
+/* Headings (Orange - passes WCAG contrast) */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  color: #FFB86C !important;
+  border-bottom: 1px dashed #FFB86C !important;
+  padding-bottom: 2px !important;
+}
+
+/* Inputs, Textareas, Buttons */
+input, textarea, select {
+  background-color: #282A36 !important;
+  color: #F1FA8C !important; /* Yellow text for inputs */
+  border: 1px solid #FF79C6 !important; /* Pink borders */
+  font-family: "Courier New", Courier, monospace !important;
+  outline: none !important;
+  padding: 4px !important;
+}
+
+input:focus, textarea:focus {
+  background-color: #44475A !important;
+}
+
+button {
+  background-color: #1A1A24 !important;
+  color: #FF79C6 !important;
+  border: 1px solid #FF79C6 !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  padding: 4px 8px !important;
+}
+
+button:hover {
+  background-color: #FF79C6 !important;
+  color: #1A1A24 !important;
+}
+
+/* Borders for cards/containers to simulate TUI panels */
+.card, [class*="card"], [class*="container"], [class*="panel"], [class*="box"] {
+  border: 1px solid #BD93F9 !important; /* Purple border for structure */
+  margin: 5px !important;
+  padding: 5px !important;
+}
+
+/* Images: subtle retro filter */
+img, video {
+  border: 1px solid #BD93F9 !important;
+  filter: contrast(120%) saturate(150%) !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 12px !important;
+  background-color: #1A1A24 !important;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #FF79C6 !important;
+}
+::-webkit-scrollbar-button {
+  display: block !important;
+  background-color: #1A1A24 !important;
+  border: 1px solid #FF79C6 !important;
+}

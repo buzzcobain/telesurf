@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Telesurf Shell</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1A1A24;
+      color: #F8F8F2;
+      font-family: 'Courier New', Courier, monospace;
+      height: 110px; /* Increased height for tab bar */
+      overflow: hidden;
+      border-bottom: 2px solid #BD93F9;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    #browser-ui {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 5px 10px;
+    }
+    #tab-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      overflow-x: auto;
+      border-bottom: 1px solid #6272A4;
+      padding-bottom: 2px;
+    }
+    .tab {
+      background-color: #282A36;
+      color: #6272A4;
+      border: 1px solid #6272A4;
+      padding: 2px 10px;
+      margin-right: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    .tab.active {
+      background-color: #BD93F9;
+      color: #1A1A24;
+      border-color: #BD93F9;
+      font-weight: bold;
+    }
+    .tab-close {
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      color: inherit;
+    }
+    .tab-close:hover {
+      color: #FF5555;
+    }
+    #new-tab-btn {
+      background: transparent;
+      border: none;
+      color: #50FA7B;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    #new-tab-btn:hover { color: #8BE9FD; }
+    
+    #top-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      margin-top: 5px;
+    }
+    button {
+      background-color: #1A1A24;
+      color: #FF79C6;
+      border: 1px solid #FF79C6;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2px 8px;
+      cursor: pointer;
+      margin-right: 5px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #FF79C6;
+      color: #1A1A24;
+    }
+    #url-form {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      margin: 0 10px;
+    }
+    .prompt {
+      margin-right: 10px;
+      font-weight: bold;
+      color: #50FA7B;
+    }
+    #url-input {
+      background: #282A36;
+      border: 1px solid #6272A4;
+      color: #F1FA8C;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      flex-grow: 1;
+      outline: none;
+      padding: 2px 5px;
+    }
+    #url-input:focus {
+      border-color: #FFB86C;
+    }
+    #favourites-bar {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      gap: 10px;
+      padding-top: 2px;
+    }
+    .fav-item {
+      color: #8BE9FD;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .fav-item:hover {
+      background-color: #8BE9FD;
+      color: #1A1A24;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="browser-ui">
+    <div id="tab-bar">
+      <!-- Tabs injected here -->
+      <button id="new-tab-btn">+</button>
+    </div>
+    <div id="top-bar">
+      <button id="back-btn" title="Back">&lt;</button>
+      <button id="forward-btn" title="Forward">&gt;</button>
+      <button id="refresh-btn" title="Refresh">↻</button>
+      <button id="home-btn" title="Home">⌂</button>
+      <form id="url-form">
+        <span class="prompt">&gt;</span>
+        <input type="text" id="url-input" placeholder="enter url or search..." autocomplete="off">
+      </form>
+      <button id="fav-btn" title="Add Favourite">[+ FAV]</button>
+    </div>
+    <div id="favourites-bar">
+      <!-- Favourites will be injected here -->
+    </div>
+  </div>
+  <script src="./renderer.js"></script>
+</body>
+</html>
