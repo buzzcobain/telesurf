@@ -20,6 +20,7 @@ To fix this, I had to bake in some serious stealth tech. Telesurf uses the absol
 - **Global TUI Injection**: Aggressively overrides standard web styling to force a monospace, Teletext/Ceefax-inspired high contrast color scheme.
 - **Regional Teletext Themes**: Hot-swap between 7 authentic international Teletext skins (Ceefax UK, Antiope France, ARD Videotext Germany, NOS Teletekst, Televideo Italy, SVT Text Sweden, Teletexto Spain).
 - **On-the-fly Pixelation Engine**: Automatically intercepts and crunches SVG logos and PNG images down to 40% resolution using an injected HTML5 canvas to perfectly match the jagged 8-bit aesthetic without breaking modern web frameworks.
+- **Classic Teletext Games**: Playable HTML5 Canvas games built directly into the homepage, starting with a classic Teletext Snake.
 - **Structural Borders**: Automatically wraps semantic tags in retro containment boxes.
 - **Modern Engine**: Built on Electron 32 (Chromium 128) for 100% web compatibility.
 - **Stealth Mode**: Leverages clean User-Agent resolution and native C++ `AutomationControlled` flags to easily bypass strict CDN bot protections.
