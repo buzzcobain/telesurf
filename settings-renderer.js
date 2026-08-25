@@ -49,4 +49,40 @@ cookiePrefSelect.addEventListener('change', (e) => {
   window.electronAPI.setCookiePref(pref);
 });
 
+// --- Dashboard Logic ---
+const widgetWeather = document.getElementById('widget-weather');
+const widgetSports = document.getElementById('widget-sports');
+const widgetGames = document.getElementById('widget-games');
+const sportsTeam = document.getElementById('sports-team');
+
+let dashboardConfig = JSON.parse(localStorage.getItem('tui-dashboard') || '{}');
+// Default config
+if (dashboardConfig.weather === undefined) dashboardConfig.weather = true;
+if (dashboardConfig.sports === undefined) dashboardConfig.sports = true;
+if (dashboardConfig.games === undefined) dashboardConfig.games = true;
+if (!dashboardConfig.team) dashboardConfig.team = 'Arsenal'; // Default for the sports API
+
+widgetWeather.checked = dashboardConfig.weather;
+widgetSports.checked = dashboardConfig.sports;
+widgetGames.checked = dashboardConfig.games;
+sportsTeam.value = dashboardConfig.team;
+
+function saveDashboardConfig() {
+  dashboardConfig.weather = widgetWeather.checked;
+  dashboardConfig.sports = widgetSports.checked;
+  dashboardConfig.games = widgetGames.checked;
+  dashboardConfig.team = sportsTeam.value.trim() || 'Arsenal';
+  
+  localStorage.setItem('tui-dashboard', JSON.stringify(dashboardConfig));
+  window.electronAPI.setDashboardConfig(dashboardConfig);
+}
+
+widgetWeather.addEventListener('change', saveDashboardConfig);
+widgetSports.addEventListener('change', saveDashboardConfig);
+widgetGames.addEventListener('change', saveDashboardConfig);
+sportsTeam.addEventListener('input', saveDashboardConfig);
+
+// Set on load
+window.electronAPI.setDashboardConfig(dashboardConfig);
+
 updateSelection();

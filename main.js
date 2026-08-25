@@ -199,7 +199,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html').then(() => {
-    createTab(winId, 'file://' + path.join(__dirname, 'readme.html'));
+    createTab(winId, 'file://' + path.join(__dirname, 'dashboard.html'));
   });
 }
 
@@ -327,7 +327,7 @@ ipcMain.on('refresh', (event) => {
 
 ipcMain.on('go-home', (event) => {
   const view = getActiveView(event.sender.getOwnerBrowserWindow().id);
-  if (view) view.webContents.loadURL('file://' + path.join(__dirname, 'readme.html'));
+  if (view) view.webContents.loadURL(`file://${path.join(__dirname, 'dashboard.html')}`);
 });
 
 ipcMain.handle('get-current-url', (event) => {
@@ -360,6 +360,33 @@ ipcMain.on('set-theme', (event, theme) => {
 ipcMain.on('set-cookie-pref', (event, pref) => {
   cookiePref = pref;
 });
+
+// --- Dashboard IPC Handlers ---
+let dashboardConfig = { weather: true, sports: true, games: true, team: 'Arsenal' };
+const apiService = require('./api-service.js');
+
+ipcMain.on('set-dashboard-config', (event, config) => {
+  dashboardConfig = config;
+  for (const winState of windows.values()) {
+    winState.tabs.forEach((view) => {
+      view.webContents.send('dashboard-changed', config);
+    });
+  }
+});
+
+ipcMain.handle('get-dashboard-config', () => dashboardConfig);
+
+ipcMain.handle('get-weather-data', async () => {
+  // We use the system's timezone to guess the location dynamically
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
+  return await apiService.fetchWeather(timeZone);
+});
+
+ipcMain.handle('get-sports-data', async (event, team) => {
+  const targetTeam = team || dashboardConfig.team || 'Arsenal';
+  return await apiService.fetchSports(targetTeam);
+});
+// ------------------------------
 
 ipcMain.on('show-settings-menu', (event) => {
   const win = event.sender.getOwnerBrowserWindow();

@@ -14,7 +14,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   closeTab: (id) => ipcRenderer.send('ui-close-tab', id),
   setTheme: (theme) => ipcRenderer.send('set-theme', theme),
   setCookiePref: (pref) => ipcRenderer.send('set-cookie-pref', pref),
+  setDashboardConfig: (config) => ipcRenderer.send('set-dashboard-config', config),
   showSettingsMenu: () => ipcRenderer.send('show-settings-menu'),
+
+  // Sync / Promise based requests for dashboard data
+  getDashboardConfig: () => ipcRenderer.invoke('get-dashboard-config'),
+  getWeatherData: () => ipcRenderer.invoke('get-weather-data'),
+  getSportsData: (team) => ipcRenderer.invoke('get-sports-data', team),
 
   // Events from main process
   onUrlUpdated: (callback) => ipcRenderer.on('url-updated', (_event, url) => callback(url)),
@@ -23,4 +29,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onTabClosed: (callback) => ipcRenderer.on('tab-closed', (_event, id) => callback(id)),
   onActiveTabChanged: (callback) => ipcRenderer.on('active-tab-changed', (_event, id) => callback(id)),
   onThemeChanged: (callback) => ipcRenderer.on('theme-changed', (_event, theme) => callback(theme)),
+  onDashboardChanged: (callback) => ipcRenderer.on('dashboard-changed', (_event, config) => callback(config)),
 });

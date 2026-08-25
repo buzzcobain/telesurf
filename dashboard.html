@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Telesurf Dashboard</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 4px solid #00FF00;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .header span.page { color: #FFFF00; }
+    .header span.title { color: #00FFFF; }
+    .header span.clock { color: #FFFFFF; }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+    
+    .widget {
+      border: 2px solid #FF00FF;
+      padding: 15px;
+      background: #000;
+      min-height: 150px;
+    }
+    
+    .widget h2 {
+      margin-top: 0;
+      border-bottom: 2px solid #00FFFF;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+      font-size: 20px;
+      color: #FFFF00;
+    }
+    
+    /* Teletext Snake specific */
+    #snake-game {
+      border: 2px solid #00FF00;
+      outline: none;
+      width: 100%;
+      height: auto;
+      max-width: 400px;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    .error { color: #FF0000; font-weight: bold; }
+    .loading { color: #00FF00; animation: blink 1s infinite; }
+    
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 5px 0; border-bottom: 1px dashed #444; }
+    .score { color: #FFFF00; font-weight: bold; text-align: right; }
+  </style>
+</head>
+<body>
+  
+  <div class="header">
+    <span class="page">P100</span>
+    <span class="title">TELESURF INDEX</span>
+    <span class="clock" id="clock">00:00:00</span>
+  </div>
+
+  <div class="grid-container" id="grid">
+    <!-- Widgets will be injected here -->
+  </div>
+  
+  <script>
+    // Clock
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+    }, 1000);
+
+    const grid = document.getElementById('grid');
+
+    async function initDashboard() {
+      // 1. Get Config
+      let config = { weather: true, sports: true, games: true, team: 'Arsenal' };
+      if (window.electronAPI && window.electronAPI.getDashboardConfig) {
+        config = await window.electronAPI.getDashboardConfig();
+      }
+
+      grid.innerHTML = ''; // Clear
+
+      // 2. Weather Widget
+      if (config.weather) {
+        const weatherDiv = document.createElement('div');
+        weatherDiv.className = 'widget';
+        weatherDiv.innerHTML = `<h2>LOCAL WEATHER</h2><div id="weather-content" class="loading">FETCHING DATA...</div>`;
+        grid.appendChild(weatherDiv);
+        
+        if (window.electronAPI && window.electronAPI.getWeatherData) {
+          window.electronAPI.getWeatherData().then(data => {
+            const content = document.getElementById('weather-content');
+            if (data.success) {
+              const codeMap = {
+                0: 'CLEAR SKY', 1: 'MAINLY CLEAR', 2: 'PARTLY CLOUDY', 3: 'OVERCAST',
+                45: 'FOG', 48: 'DEPOSITING RIME FOG', 51: 'LIGHT DRIZZLE', 53: 'MODERATE DRIZZLE',
+                61: 'SLIGHT RAIN', 63: 'MODERATE RAIN', 65: 'HEAVY RAIN', 71: 'SLIGHT SNOW',
+                80: 'RAIN SHOWERS', 95: 'THUNDERSTORM'
+              };
+              const desc = codeMap[data.code] || 'UNKNOWN';
+              content.innerHTML = `
+                <div style="font-size: 22px; color: #00FFFF; margin-bottom: 10px;">${data.city.toUpperCase()}</div>
+                <div style="font-size: 32px; color: #FFFF00; margin-bottom: 10px;">${data.temp}°C</div>
+                <div style="color: #00FF00; margin-bottom: 5px;">COND: ${desc}</div>
+                <div style="color: #FF00FF;">WIND: ${data.wind} km/h</div>
+              `;
+            } else {
+              content.innerHTML = `<span class="error">${data.error}</span>`;
+            }
+          });
+        }
+      }
+
+      // 3. Sports Widget
+      if (config.sports) {
+        const sportsDiv = document.createElement('div');
+        sportsDiv.className = 'widget';
+        sportsDiv.innerHTML = `<h2>SPORTS: ${config.team.toUpperCase()}</h2><div id="sports-content" class="loading">FETCHING DATA...</div>`;
+        grid.appendChild(sportsDiv);
+        
+        if (window.electronAPI && window.electronAPI.getSportsData) {
+          window.electronAPI.getSportsData(config.team).then(data => {
+            const content = document.getElementById('sports-content');
+            if (data.success) {
+              let html = `<div style="color: #00FFFF; margin-bottom: 10px;">TEAM: ${data.team}</div>`;
+              html += `<div style="color: #FF00FF; margin-bottom: 15px;">STADIUM: ${data.stadium}</div>`;
+              
+              if (data.results && data.results.length > 0) {
+                html += `<table>`;
+                data.results.forEach(res => {
+                  html += `<tr>
+                    <td style="color: #00FF00;">${res.date}</td>
+                    <td style="color: #FFFFFF;">${res.event}</td>
+                    <td class="score">${res.homeScore} - ${res.awayScore}</td>
+                  </tr>`;
+                });
+                html += `</table>`;
+              } else {
+                html += `<div style="color: #FFFF00;">NO RECENT RESULTS</div>`;
+              }
+              content.innerHTML = html;
+            } else {
+              content.innerHTML = `<span class="error">${data.error}</span>`;
+            }
+          });
+        }
+      }
+
+      // 4. Games Widget (Snake)
+      if (config.games) {
+        const gamesDiv = document.createElement('div');
+        gamesDiv.className = 'widget';
+        gamesDiv.innerHTML = `
+          <h2>TELETEXT SNAKE</h2>
+          <p style="color: #00FFFF; font-size: 14px; text-align: center;">Use Arrow Keys to play. Click to focus.</p>
+          <canvas id="snake-game" width="400" height="300" tabindex="0"></canvas>
+          <div id="snake-score" style="color: #FFFFFF; margin-top: 10px; font-weight: bold; text-align: center;">Score: 0</div>
+        `;
+        grid.appendChild(gamesDiv);
+        initSnake();
+      }
+    }
+
+    // Snake Logic
+    function initSnake() {
+      const canvas = document.getElementById('snake-game');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const scoreEl = document.getElementById('snake-score');
+      
+      const gridSize = 20;
+      let snake = [{x: 10, y: 10}];
+      let apple = {x: 15, y: 10};
+      let dx = 1, dy = 0, score = 0, gameInterval;
+      
+      function drawRect(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x * gridSize, y * gridSize, gridSize - 1, gridSize - 1);
+      }
+      
+      function resetGame() {
+        snake = [{x: 10, y: 10}]; apple = {x: 15, y: 10};
+        dx = 1; dy = 0; score = 0;
+        scoreEl.innerText = \`Score: \${score}\`;
+      }
+      
+      function update() {
+        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+        
+        if (head.x < 0 || head.x >= canvas.width/gridSize || head.y < 0 || head.y >= canvas.height/gridSize) { resetGame(); return; }
+        
+        for (let part of snake) {
+          if (part.x === head.x && part.y === head.y) { resetGame(); return; }
+        }
+        
+        snake.unshift(head);
+        
+        if (head.x === apple.x && head.y === apple.y) {
+          score += 10; scoreEl.innerText = \`Score: \${score}\`;
+          apple = { x: Math.floor(Math.random() * (canvas.width/gridSize)), y: Math.floor(Math.random() * (canvas.height/gridSize)) };
+        } else {
+          snake.pop();
+        }
+        
+        ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawRect(apple.x, apple.y, '#FF0000');
+        for (let i = 0; i < snake.length; i++) {
+          drawRect(snake[i].x, snake[i].y, i === 0 ? '#00FFFF' : '#00FF00');
+        }
+      }
+      
+      canvas.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -1; e.preventDefault(); }
+        if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = 1; e.preventDefault(); }
+        if (e.key === 'ArrowLeft' && dx === 0) { dx = -1; dy = 0; e.preventDefault(); }
+        if (e.key === 'ArrowRight' && dx === 0) { dx = 1; dy = 0; e.preventDefault(); }
+      });
+      
+      canvas.addEventListener('focus', () => { if(!gameInterval) gameInterval = setInterval(update, 100); });
+      canvas.addEventListener('blur', () => {
+        clearInterval(gameInterval); gameInterval = null;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFFFFF'; ctx.font = '20px "Courier New"'; ctx.textAlign = 'center';
+        ctx.fillText('CLICK TO PLAY', canvas.width/2, canvas.height/2);
+      });
+      
+      resetGame(); update(); canvas.dispatchEvent(new Event('blur'));
+    }
+
+    initDashboard();
+
+    // Listen for config changes broadcasted from settings
+    if (window.electronAPI && window.electronAPI.onDashboardChanged) {
+      window.electronAPI.onDashboardChanged((newConfig) => {
+        initDashboard();
+      });
+    }
+  </script>
+</body>
+</html>
