@@ -34,8 +34,8 @@ To fix this, I had to bake in some serious stealth tech. Telesurf uses the absol
 Make sure you have a very recent version of Node installed (Node 22+).
 
 ```bash
-git clone https://github.com/yourusername/telesurf-browser.git
-cd telesurf-browser
+git clone https://github.com/buzzcobain/telesurf.git
+cd telesurf
 npm install
 npm start
 ```
