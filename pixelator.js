@@ -19,8 +19,8 @@ function pixelateImage(imgElement) {
   const width = imgElement.clientWidth || imgElement.naturalWidth || 100;
   const height = imgElement.clientHeight || imgElement.naturalHeight || 100;
 
-  // We want to reduce the resolution by a factor of e.g. 5
-  const scaleFactor = 0.15; 
+  // We want to reduce the resolution by a factor of e.g. 2.5 to keep brands readable
+  const scaleFactor = 0.4; 
   const tinyWidth = Math.max(1, Math.floor(width * scaleFactor));
   const tinyHeight = Math.max(1, Math.floor(height * scaleFactor));
 
@@ -82,7 +82,7 @@ function pixelateSVG(svgElement) {
   const img = new Image();
   img.crossOrigin = "Anonymous";
   img.onload = () => {
-    const scaleFactor = 0.15;
+    const scaleFactor = 0.4;
     const tinyWidth = Math.max(1, Math.floor(width * scaleFactor));
     const tinyHeight = Math.max(1, Math.floor(height * scaleFactor));
 
