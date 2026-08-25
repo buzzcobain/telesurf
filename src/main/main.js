@@ -24,9 +24,9 @@ app.commandLine.appendSwitch('lang', 'en-US');
 // We will set the clean User-Agent dynamically in whenReady()
 let cleanUA = '';
 
-const tuiCss = fs.readFileSync(path.join(__dirname, 'tui-theme.css'), 'utf-8');
-const pixelatorJs = fs.readFileSync(path.join(__dirname, 'pixelator.js'), 'utf-8');
-const cookieManagerJs = fs.readFileSync(path.join(__dirname, 'cookie-manager.js'), 'utf-8');
+const tuiCss = fs.readFileSync(path.join(__dirname, '../renderer/tui-theme.css'), 'utf-8');
+const pixelatorJs = fs.readFileSync(path.join(__dirname, '../inject/pixelator.js'), 'utf-8');
+const cookieManagerJs = fs.readFileSync(path.join(__dirname, '../inject/cookie-manager.js'), 'utf-8');
 
 const windows = new Map(); // winId -> { window, tabs, activeTabId, tabCounter }
 
@@ -68,7 +68,7 @@ function createTab(winId, url = 'https://duckduckgo.com') {
 
   const view = new WebContentsView({
     webPreferences: { 
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/preload.js'),
       nodeIntegration: false, 
       contextIsolation: true,
       sandbox: true,
@@ -177,13 +177,13 @@ function openDevTools(winId) {
     title: 'TELESURF DEV TOOLS',
     backgroundColor: '#000000',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/preload.js'),
       nodeIntegration: false,
       contextIsolation: true
     }
   });
 
-  winState.devToolsWin.loadFile('devtools.html');
+  winState.devToolsWin.loadFile(path.join(__dirname, '../renderer/devtools.html'));
   winState.devToolsWin.on('closed', () => {
     winState.devToolsWin = null;
   });
@@ -226,7 +226,7 @@ function closeTab(winId, tabId) {
   }
 
   if (winState.tabs.size === 0) {
-    const artId = createTab(winId, 'file://' + path.join(__dirname, 'welcome.html'));
+    const artId = createTab(winId, 'file://' + path.join(__dirname, '../renderer/welcome.html'));
     switchTab(winId, artId);
   } else if (winState.activeTabId === tabId) {
     const remainingTabs = Array.from(winState.tabs.keys());
@@ -247,7 +247,7 @@ function createWindow() {
     title: 'Telesurf Browser',
     backgroundColor: '#1A1A24',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true
@@ -275,21 +275,21 @@ function createWindow() {
     windows.delete(winId);
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   mainWindow.webContents.on('did-finish-load', () => {
     let focusTabId = null;
 
     if (dashboardConfig.startWithReadme) {
-      focusTabId = createTab(winId, 'file://' + path.join(__dirname, 'readme.html'));
+      focusTabId = createTab(winId, 'file://' + path.join(__dirname, '../renderer/readme.html'));
     }
 
     if (dashboardConfig.startWithDashboard) {
-      const dbId = createTab(winId, 'file://' + path.join(__dirname, 'dashboard.html'));
+      const dbId = createTab(winId, 'file://' + path.join(__dirname, '../renderer/dashboard.html'));
       focusTabId = dbId; // Dashboard takes focus
     }
 
     if (!dashboardConfig.startWithReadme && !dashboardConfig.startWithDashboard) {
-      focusTabId = createTab(winId, 'file://' + path.join(__dirname, 'welcome.html'));
+      focusTabId = createTab(winId, 'file://' + path.join(__dirname, '../renderer/welcome.html'));
     }
     
     if (focusTabId) {
@@ -422,7 +422,7 @@ ipcMain.on('refresh', (event) => {
 
 ipcMain.on('go-home', (event) => {
   const view = getActiveView(event.sender.getOwnerBrowserWindow().id);
-  if (view) view.webContents.loadURL(`file://${path.join(__dirname, 'dashboard.html')}`);
+  if (view) view.webContents.loadURL(`file://${path.join(__dirname, '../renderer/dashboard.html')}`);
 });
 
 ipcMain.handle('get-current-url', (event) => {
@@ -503,10 +503,10 @@ ipcMain.on('show-settings-menu', (event) => {
     title: 'Settings',
     backgroundColor: '#000000',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/preload.js'),
       nodeIntegration: false,
       contextIsolation: true
     }
   });
-  settingsWin.loadFile('settings.html');
+  settingsWin.loadFile(path.join(__dirname, '../renderer/settings.html'));
 });
