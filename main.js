@@ -1,6 +1,14 @@
 const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
+
+process.on('uncaughtException', (err) => {
+  fs.writeFileSync('crash.log', 'Uncaught Exception: ' + err.stack);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  fs.writeFileSync('crash.log', 'Unhandled Rejection: ' + reason);
+});
+
 const { ElectronBlocker } = require('@ghostery/adblocker-electron');
 const fetch = require('cross-fetch');
 
@@ -90,8 +98,10 @@ function switchTab(winId, tabId) {
   // UI is now taller to accommodate tab bar (~110px)
   view.setBounds({ x: 0, y: 110, width: bounds.width, height: bounds.height - 110 });
   
-  winState.window.webContents.send('active-tab-changed', tabId);
-  winState.window.webContents.send('url-updated', view.webContents.getURL());
+  if (winState.window && !winState.window.isDestroyed()) {
+    winState.window.webContents.send('active-tab-changed', tabId);
+    winState.window.webContents.send('url-updated', view.webContents.getURL());
+  }
 }
 
 function closeTab(winId, tabId) {
@@ -102,7 +112,9 @@ function closeTab(winId, tabId) {
   // view.webContents.destroy(); // Optional, let garbage collector handle or force destroy
   winState.tabs.delete(tabId);
   
-  winState.window.webContents.send('tab-closed', tabId);
+  if (winState.window && !winState.window.isDestroyed()) {
+    winState.window.webContents.send('tab-closed', tabId);
+  }
 
   if (winState.tabs.size === 0) {
     winState.window.close();
@@ -232,8 +244,14 @@ app.whenReady().then(() => {
 
   // Initialize Global Ad and Tracker Blocker
   ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-    blocker.enableBlockingInSession(session.defaultSession);
-    console.log('🛡️ Ghostery Ad and Tracker blocker enabled globally.');
+    try {
+      blocker.enableBlockingInSession(session.defaultSession);
+      console.log('🛡️ Ghostery Ad and Tracker blocker enabled globally.');
+    } catch (e) {
+      console.error('Could not enable Ghostery blocker (session might be destroyed):', e);
+    }
+  }).catch(err => {
+    console.error('Failed to download Ghostery blocklists:', err);
   });
 
   setupMenu();
