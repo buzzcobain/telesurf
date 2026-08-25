@@ -2,6 +2,7 @@
   "name": "telesurf-browser",
   "version": "1.0.0",
   "description": "",
+  "main": "main.js",
   "scripts": {
     "start": "electron .",
     "test:ui": "playwright test tests/browser.spec.js",
@@ -17,5 +18,9 @@
     "electron": "^43.4.1",
     "jest": "^30.4.2",
     "playwright": "^1.62.1"
+  },
+  "dependencies": {
+    "@ghostery/adblocker-electron": "^2.18.2",
+    "cross-fetch": "^4.1.0"
   }
 }

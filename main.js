@@ -2,6 +2,16 @@ const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session } = require(
 const path = require('path');
 const fs = require('fs');
 
+process.on('uncaughtException', (err) => {
+  fs.writeFileSync('crash.log', 'Uncaught Exception: ' + err.stack);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  fs.writeFileSync('crash.log', 'Unhandled Rejection: ' + reason);
+});
+
+const { ElectronBlocker } = require('@ghostery/adblocker-electron');
+const fetch = require('cross-fetch');
+
 app.name = 'Google Chrome';
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled');
 app.commandLine.appendSwitch('lang', 'en-US');
@@ -26,12 +36,22 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   const view = new WebContentsView({
     webPreferences: { 
       nodeIntegration: false, 
-      contextIsolation: true
+      contextIsolation: true,
+      sandbox: true,
+      safeDialogs: true,
+      disableBlinkFeatures: 'Auxclick'
     }
   });
   
   const tabId = ++winState.tabCounter;
   winState.tabs.set(tabId, view);
+
+  // Security: Intercept window.open() and target="_blank" to open in our own tab system
+  // instead of spawning unstyled, unmanaged Electron popup windows.
+  view.webContents.setWindowOpenHandler((details) => {
+    createTab(winId, details.url);
+    return { action: 'deny' };
+  });
   
   view.webContents.on('did-finish-load', () => {
     applyTuiTheme(view.webContents);
@@ -78,8 +98,10 @@ function switchTab(winId, tabId) {
   // UI is now taller to accommodate tab bar (~110px)
   view.setBounds({ x: 0, y: 110, width: bounds.width, height: bounds.height - 110 });
   
-  winState.window.webContents.send('active-tab-changed', tabId);
-  winState.window.webContents.send('url-updated', view.webContents.getURL());
+  if (winState.window && !winState.window.isDestroyed()) {
+    winState.window.webContents.send('active-tab-changed', tabId);
+    winState.window.webContents.send('url-updated', view.webContents.getURL());
+  }
 }
 
 function closeTab(winId, tabId) {
@@ -90,7 +112,9 @@ function closeTab(winId, tabId) {
   // view.webContents.destroy(); // Optional, let garbage collector handle or force destroy
   winState.tabs.delete(tabId);
   
-  winState.window.webContents.send('tab-closed', tabId);
+  if (winState.window && !winState.window.isDestroyed()) {
+    winState.window.webContents.send('tab-closed', tabId);
+  }
 
   if (winState.tabs.size === 0) {
     winState.window.close();
@@ -114,6 +138,9 @@ function createWindow() {
     backgroundColor: '#1A1A24',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true
     }
   });
 
@@ -214,6 +241,18 @@ app.whenReady().then(() => {
   const defaultUA = session.defaultSession.getUserAgent();
   cleanUA = defaultUA.replace(/Electron\/[0-9\.]+ /g, '').replace(/tui-browser\/[0-9\.]+ /g, '');
   app.userAgentFallback = cleanUA;
+
+  // Initialize Global Ad and Tracker Blocker
+  ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+    try {
+      blocker.enableBlockingInSession(session.defaultSession);
+      console.log('🛡️ Ghostery Ad and Tracker blocker enabled globally.');
+    } catch (e) {
+      console.error('Could not enable Ghostery blocker (session might be destroyed):', e);
+    }
+  }).catch(err => {
+    console.error('Failed to download Ghostery blocklists:', err);
+  });
 
   setupMenu();
   createWindow();
