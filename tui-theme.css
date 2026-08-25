@@ -45,6 +45,66 @@
   --media-border: #00FFFF;
 }
 
+/* TELETEKST (NETHERLANDS) - NOS Style */
+:root.theme-teletekst {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+  --border-color: #0000FF;
+  --link-color: #FFFF00;
+  --heading-bg: #0000FF; /* Blue headers */
+  --heading-color: #FFFF00; /* Yellow text on blue headers */
+  --input-bg: #000000;
+  --input-color: #FFFFFF;
+  --input-border: #FFFF00;
+  --panel-border: #0000FF;
+  --media-border: #FFFFFF;
+}
+
+/* TELEVIDEO (ITALY) - RAI Style */
+:root.theme-televideo {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+  --border-color: #FF0000; /* Red blocks */
+  --link-color: #00FFFF;
+  --heading-bg: #FF0000;
+  --heading-color: #FFFFFF;
+  --input-bg: #000000;
+  --input-color: #FFFF00;
+  --input-border: #0000FF; /* Blue blocks */
+  --panel-border: #0000FF;
+  --media-border: #FF0000;
+}
+
+/* SVT TEXT (SWEDEN) */
+:root.theme-svt {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+  --border-color: #00FFFF; /* Heavy Cyan */
+  --link-color: #FFFF00; /* Heavy Yellow */
+  --heading-bg: #00FFFF;
+  --heading-color: #000000;
+  --input-bg: #000000;
+  --input-color: #FFFF00;
+  --input-border: #00FFFF;
+  --panel-border: #FFFFFF;
+  --media-border: #FFFF00;
+}
+
+/* TELETEXTO (SPAIN) - TVE Style */
+:root.theme-teletexto {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+  --border-color: #00FF00; /* Green borders */
+  --link-color: #FFFF00; /* Yellow links */
+  --heading-bg: #00FF00;
+  --heading-color: #000000;
+  --input-bg: #000000;
+  --input-color: #00FF00;
+  --input-border: #FFFF00;
+  --panel-border: #00FF00;
+  --media-border: #FFFFFF;
+}
+
 * {
   font-family: 'VT323', 'Courier New', Courier, monospace !important;
   border-radius: 0 !important;

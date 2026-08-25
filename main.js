@@ -322,10 +322,8 @@ ipcMain.on('ui-close-tab', (event, tabId) => closeTab(event.sender.getOwnerBrows
 
 ipcMain.on('set-theme', (event, theme) => {
   currentTheme = theme;
-  const winId = event.sender.getOwnerBrowserWindow().id;
-  const winState = windows.get(winId);
-  if (winState) {
-    // Notify all background WebContents to update their root class
+  // Notify all background WebContents across all windows
+  for (const winState of windows.values()) {
     winState.tabs.forEach((view) => {
       view.webContents.executeJavaScript(`
         document.documentElement.className = '';
@@ -334,45 +332,25 @@ ipcMain.on('set-theme', (event, theme) => {
         }
       `).catch(() => {});
     });
+    // Also notify the main renderer to update its local state
+    winState.window.webContents.send('theme-changed', theme);
   }
 });
 
 ipcMain.on('show-settings-menu', (event) => {
   const win = event.sender.getOwnerBrowserWindow();
-  const template = [
-    { label: 'Settings / Region', enabled: false },
-    { type: 'separator' },
-    {
-      label: 'Ceefax (UK)',
-      type: 'radio',
-      checked: currentTheme === 'ceefax',
-      click: () => {
-        currentTheme = 'ceefax';
-        event.sender.send('theme-changed', 'ceefax');
-        ipcMain.emit('set-theme', event, 'ceefax');
-      }
-    },
-    {
-      label: 'Antiope / Minitel (France)',
-      type: 'radio',
-      checked: currentTheme === 'antiope',
-      click: () => {
-        currentTheme = 'antiope';
-        event.sender.send('theme-changed', 'antiope');
-        ipcMain.emit('set-theme', event, 'antiope');
-      }
-    },
-    {
-      label: 'ARD Videotext (Germany)',
-      type: 'radio',
-      checked: currentTheme === 'videotext',
-      click: () => {
-        currentTheme = 'videotext';
-        event.sender.send('theme-changed', 'videotext');
-        ipcMain.emit('set-theme', event, 'videotext');
-      }
+  const settingsWin = new BrowserWindow({
+    parent: win,
+    modal: true,
+    width: 600,
+    height: 500,
+    title: 'Settings',
+    backgroundColor: '#000000',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
     }
-  ];
-  const menu = Menu.buildFromTemplate(template);
-  menu.popup({ window: win });
+  });
+  settingsWin.loadFile('settings.html');
 });

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Telesurf Settings</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #000000;
+      color: #FFFFFF;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    h1 {
+      color: #FFFF00;
+      text-transform: uppercase;
+      border-bottom: 4px solid #FFFF00;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #00FFFF;
+      text-transform: uppercase;
+      margin-top: 30px;
+    }
+    .theme-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .theme-option {
+      cursor: pointer;
+      padding: 15px;
+      border: 2px solid #555;
+      text-transform: uppercase;
+      font-weight: bold;
+      background-color: #111;
+      color: #FFF;
+      display: flex;
+      flex-direction: column;
+    }
+    .theme-option span.desc {
+      font-size: 12px;
+      font-weight: normal;
+      color: #AAA;
+      margin-top: 5px;
+    }
+    .theme-option:hover {
+      border-color: #00FFFF;
+    }
+    .theme-option.selected {
+      border-color: #00FF00;
+      background-color: #002200;
+      color: #00FF00;
+    }
+    .theme-option.selected span.desc {
+      color: #00CC00;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚙ TELESURF SETTINGS</h1>
+  
+  <h2>Regional Teletext Themes</h2>
+  <div class="theme-grid">
+    <div class="theme-option" data-theme="ceefax">
+      Ceefax (UK)
+      <span class="desc">The World System Teletext standard. Cyan/Yellow on Black.</span>
+    </div>
+    <div class="theme-option" data-theme="antiope">
+      Antiope / Minitel (France)
+      <span class="desc">Amber and Blue inspired by the French packet-switching system.</span>
+    </div>
+    <div class="theme-option" data-theme="videotext">
+      ARD Videotext (Germany)
+      <span class="desc">High contrast Magenta and Red headers.</span>
+    </div>
+    <div class="theme-option" data-theme="teletekst">
+      NOS Teletekst (Netherlands)
+      <span class="desc">Famous blue backgrounds with blocky yellow headers.</span>
+    </div>
+    <div class="theme-option" data-theme="televideo">
+      Televideo (Italy)
+      <span class="desc">RAI style red and blue distinct graphic blocks.</span>
+    </div>
+    <div class="theme-option" data-theme="svt">
+      SVT Text (Sweden)
+      <span class="desc">Clean black background with heavy cyan and yellow typography.</span>
+    </div>
+    <div class="theme-option" data-theme="teletexto">
+      Teletexto (Spain)
+      <span class="desc">TVE style green and yellow typography.</span>
+    </div>
+  </div>
+
+  <script src="./settings-renderer.js"></script>
+</body>
+</html>
