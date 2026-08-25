@@ -226,7 +226,8 @@ function closeTab(winId, tabId) {
   }
 
   if (winState.tabs.size === 0) {
-    winState.window.close();
+    const artId = createTab(winId, 'file://' + path.join(__dirname, 'welcome.html'));
+    switchTab(winId, artId);
   } else if (winState.activeTabId === tabId) {
     const remainingTabs = Array.from(winState.tabs.keys());
     switchTab(winId, remainingTabs[remainingTabs.length - 1]);

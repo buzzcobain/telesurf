@@ -9,15 +9,34 @@
       color: #00FF00;
       font-family: 'Courier New', monospace;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
       text-align: center;
+      overflow: hidden; /* Prevent scrolling */
     }
     pre {
       font-weight: bold;
       text-shadow: 2px 2px #000;
+      margin-bottom: 30px;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px 20px;
+      padding: 12px 24px;
+      background-color: #000;
+      color: #00FFFF;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid #00FFFF;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #00FFFF;
+      color: #000;
     }
   </style>
 </head>
@@ -33,5 +52,26 @@
       
          * Dave is amazing in the art *
 </pre>
+<div>
+  <a href="dashboard.html" class="btn">DASHBOARD</a>
+  <a href="readme.html" class="btn">README</a>
+</div>
+
+<script>
+  // Force links to trigger Electron navigation inside the tab
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = btn.getAttribute('href');
+      // Resolve absolute file path based on current location
+      const url = new URL(target, window.location.href).href;
+      if (window.electronAPI && window.electronAPI.navigate) {
+        window.electronAPI.navigate(url);
+      } else {
+        window.location.href = target;
+      }
+    });
+  });
+</script>
 </body>
 </html>
