@@ -201,7 +201,7 @@
       function resetGame() {
         snake = [{x: 10, y: 10}]; apple = {x: 15, y: 10};
         dx = 1; dy = 0; score = 0;
-        scoreEl.innerText = \`Score: \${score}\`;
+        scoreEl.innerText = `Score: ${score}`;
       }
       
       function update() {
@@ -216,7 +216,7 @@
         snake.unshift(head);
         
         if (head.x === apple.x && head.y === apple.y) {
-          score += 10; scoreEl.innerText = \`Score: \${score}\`;
+          score += 10; scoreEl.innerText = `Score: ${score}`;
           apple = { x: Math.floor(Math.random() * (canvas.width/gridSize)), y: Math.floor(Math.random() * (canvas.height/gridSize)) };
         } else {
           snake.pop();
@@ -255,6 +255,20 @@
         initDashboard();
       });
     }
+
+    // Global error handler for debugging
+    window.addEventListener('error', function(e) {
+      const err = document.createElement('div');
+      err.style.color = 'red';
+      err.innerText = 'JS Error: ' + e.message + ' at line ' + e.lineno;
+      document.body.appendChild(err);
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      const err = document.createElement('div');
+      err.style.color = 'red';
+      err.innerText = 'Promise Error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason);
+      document.body.appendChild(err);
+    });
   </script>
 </body>
 </html>
