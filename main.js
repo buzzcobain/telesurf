@@ -24,9 +24,8 @@ app.commandLine.appendSwitch('lang', 'en-US');
 // We will set the clean User-Agent dynamically in whenReady()
 let cleanUA = '';
 
-const cssPath = path.join(__dirname, 'tui-theme.css');
-let tuiCss = '';
-try { tuiCss = fs.readFileSync(cssPath, 'utf8'); } catch(e) {}
+const tuiCss = fs.readFileSync(path.join(__dirname, 'tui-theme.css'), 'utf-8');
+const pixelatorJs = fs.readFileSync(path.join(__dirname, 'pixelator.js'), 'utf-8');
 
 const windows = new Map(); // winId -> { window, tabs, activeTabId, tabCounter }
 
@@ -39,6 +38,15 @@ function applyTuiTheme(webContents) {
     if ('${currentTheme}' !== 'ceefax') {
       document.documentElement.classList.add('theme-${currentTheme}');
     }
+    
+    // Inject pixelator script
+    (() => {
+      if (window._telesurfPixelatorInjected) return;
+      window._telesurfPixelatorInjected = true;
+      try {
+        ${pixelatorJs}
+      } catch(e) { console.error(e); }
+    })();
   `).catch(() => {});
 }
 
