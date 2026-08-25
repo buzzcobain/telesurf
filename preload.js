@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   switchTab: (id) => ipcRenderer.send('ui-switch-tab', id),
   closeTab: (id) => ipcRenderer.send('ui-close-tab', id),
   setTheme: (theme) => ipcRenderer.send('set-theme', theme),
+  showSettingsMenu: () => ipcRenderer.send('show-settings-menu'),
 
   // Events from main process
   onUrlUpdated: (callback) => ipcRenderer.on('url-updated', (_event, url) => callback(url)),
@@ -20,4 +21,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onTabUpdated: (callback) => ipcRenderer.on('tab-updated', (_event, tab) => callback(tab)),
   onTabClosed: (callback) => ipcRenderer.on('tab-closed', (_event, id) => callback(id)),
   onActiveTabChanged: (callback) => ipcRenderer.on('active-tab-changed', (_event, id) => callback(id)),
+  onThemeChanged: (callback) => ipcRenderer.on('theme-changed', (_event, theme) => callback(theme)),
 });

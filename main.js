@@ -336,3 +336,43 @@ ipcMain.on('set-theme', (event, theme) => {
     });
   }
 });
+
+ipcMain.on('show-settings-menu', (event) => {
+  const win = event.sender.getOwnerBrowserWindow();
+  const template = [
+    { label: 'Settings / Region', enabled: false },
+    { type: 'separator' },
+    {
+      label: 'Ceefax (UK)',
+      type: 'radio',
+      checked: currentTheme === 'ceefax',
+      click: () => {
+        currentTheme = 'ceefax';
+        event.sender.send('theme-changed', 'ceefax');
+        ipcMain.emit('set-theme', event, 'ceefax');
+      }
+    },
+    {
+      label: 'Antiope / Minitel (France)',
+      type: 'radio',
+      checked: currentTheme === 'antiope',
+      click: () => {
+        currentTheme = 'antiope';
+        event.sender.send('theme-changed', 'antiope');
+        ipcMain.emit('set-theme', event, 'antiope');
+      }
+    },
+    {
+      label: 'ARD Videotext (Germany)',
+      type: 'radio',
+      checked: currentTheme === 'videotext',
+      click: () => {
+        currentTheme = 'videotext';
+        event.sender.send('theme-changed', 'videotext');
+        ipcMain.emit('set-theme', event, 'videotext');
+      }
+    }
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  menu.popup({ window: win });
+});
