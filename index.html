@@ -137,9 +137,57 @@
       background-color: #00FFFF;
       color: #000000;
     }
+    
+    /* Settings Modal */
+    #settings-modal {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #000000;
+      border: 4px solid #FFFF00;
+      padding: 20px;
+      z-index: 1000;
+      flex-direction: column;
+      min-width: 300px;
+    }
+    #settings-modal.visible {
+      display: flex;
+    }
+    #settings-modal h2 {
+      margin-top: 0;
+      color: #FFFF00;
+      text-transform: uppercase;
+      border-bottom: 2px solid #FFFF00;
+      padding-bottom: 5px;
+    }
+    .theme-option {
+      margin: 10px 0;
+      cursor: pointer;
+      padding: 10px;
+      border: 2px solid #555;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .theme-option:hover {
+      border-color: #00FFFF;
+    }
+    .theme-option.selected {
+      border-color: #00FF00;
+      color: #00FF00;
+    }
   </style>
 </head>
 <body>
+  <div id="settings-modal">
+    <h2>Settings / Region</h2>
+    <div class="theme-option selected" data-theme="ceefax">Ceefax (UK)</div>
+    <div class="theme-option" data-theme="antiope">Antiope/Minitel (France)</div>
+    <div class="theme-option" data-theme="videotext">ARD Videotext (Germany)</div>
+    <button id="close-settings" style="margin-top: 15px;">Close</button>
+  </div>
+
   <div id="browser-ui">
     <div id="tab-bar">
       <!-- Tabs injected here -->
@@ -155,6 +203,7 @@
         <input type="text" id="url-input" placeholder="enter url or search..." autocomplete="off">
       </form>
       <button id="fav-btn" title="Add Favourite">[+ FAV]</button>
+      <button id="settings-btn" title="Settings">⚙ SETTINGS</button>
     </div>
     <div id="favourites-bar">
       <!-- Favourites will be injected here -->

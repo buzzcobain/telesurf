@@ -1,4 +1,49 @@
-/* TELETEXT / CEEFAX THEME */
+/* TELETEXT / CEEFAX / ANTIOPE / VIDEOTEXT THEMES */
+
+/* DEFAULT THEME: CEEFAX (UK) */
+:root {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+  --border-color: #0000FF;
+  --link-color: #00FFFF;
+  --heading-bg: #0000FF;
+  --heading-color: #FFFF00;
+  --input-bg: #000000;
+  --input-color: #00FF00;
+  --input-border: #FF00FF;
+  --panel-border: #00FF00;
+  --media-border: #FFFF00;
+}
+
+/* ANTIOPE (FRANCE) - Minitel inspired Amber & Blue */
+:root.theme-antiope {
+  --bg-color: #000044; /* Dark blue background often used in France */
+  --text-color: #FFFFFF;
+  --border-color: #FFA500;
+  --link-color: #FFFF00;
+  --heading-bg: #FFA500;
+  --heading-color: #000000;
+  --input-bg: #000044;
+  --input-color: #FFA500;
+  --input-border: #FFFFFF;
+  --panel-border: #00FFFF;
+  --media-border: #FFFFFF;
+}
+
+/* VIDEOTEXT (GERMANY) - ARD Text / BTX high contrast */
+:root.theme-videotext {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+  --border-color: #FF00FF; /* Magenta */
+  --link-color: #00FF00; /* Green links */
+  --heading-bg: #FF0000; /* Red headers */
+  --heading-color: #FFFFFF;
+  --input-bg: #000000;
+  --input-color: #00FFFF;
+  --input-border: #00FF00;
+  --panel-border: #FF0000;
+  --media-border: #00FFFF;
+}
 
 * {
   font-family: 'VT323', 'Courier New', Courier, monospace !important;
@@ -12,51 +57,46 @@
   overflow-wrap: break-word !important;
 }
 
-/* Deep space background, high contrast white text */
 body {
-  background-color: #000000 !important;
-  color: #FFFFFF !important;
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
 }
 
-/* Force backgrounds and add structural borders */
 div, section, article, nav, header, footer, main, aside, ul, form {
-  background-color: #000000 !important;
-  color: #FFFFFF !important;
-  border: 2px solid #0000FF !important; /* Blue blocky borders */
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  border: 2px solid var(--border-color) !important;
   padding: 4px !important;
   margin: 2px !important;
 }
 
-/* Links (Cyan) */
 a {
-  color: #00FFFF !important;
+  color: var(--link-color) !important;
   text-decoration: underline !important;
   font-weight: bold !important;
   text-transform: uppercase !important;
 }
 a:hover {
-  background-color: #00FFFF !important;
-  color: #000000 !important;
+  background-color: var(--link-color) !important;
+  color: var(--bg-color) !important;
   text-decoration: none !important;
 }
 
-/* Headings (Yellow) */
 h1, h2, h3, h4, h5, h6 {
   font-weight: bold !important;
   text-transform: uppercase !important;
-  color: #FFFF00 !important;
-  background-color: #0000FF !important;
+  color: var(--heading-color) !important;
+  background-color: var(--heading-bg) !important;
   padding: 4px !important;
   margin-bottom: 8px !important;
   border-bottom: none !important;
   display: inline-block !important;
 }
 
-/* Inputs, Textareas, Buttons */
 input, textarea, select {
-  background-color: #000000 !important;
-  color: #00FF00 !important; /* Green text for inputs */
-  border: 2px solid #FF00FF !important; /* Magenta borders */
+  background-color: var(--input-bg) !important;
+  color: var(--input-color) !important;
+  border: 2px solid var(--input-border) !important;
   font-family: 'VT323', 'Courier New', Courier, monospace !important;
   outline: none !important;
   padding: 4px !important;
@@ -65,14 +105,14 @@ input, textarea, select {
 }
 
 input:focus, textarea:focus {
-  background-color: #0000FF !important;
-  color: #FFFFFF !important;
+  background-color: var(--input-border) !important;
+  color: var(--bg-color) !important;
 }
 
 button {
-  background-color: #000000 !important;
-  color: #FF00FF !important;
-  border: 2px solid #FF00FF !important;
+  background-color: var(--bg-color) !important;
+  color: var(--input-border) !important;
+  border: 2px solid var(--input-border) !important;
   text-transform: uppercase !important;
   cursor: pointer !important;
   padding: 4px 8px !important;
@@ -80,36 +120,33 @@ button {
 }
 
 button:hover {
-  background-color: #FF00FF !important;
-  color: #000000 !important;
+  background-color: var(--input-border) !important;
+  color: var(--bg-color) !important;
 }
 
-/* Borders for cards/containers to simulate TUI panels */
 .card, [class*="card"], [class*="container"], [class*="panel"], [class*="box"] {
-  border: 2px solid #00FF00 !important; /* Green borders */
+  border: 2px solid var(--panel-border) !important;
   margin: 5px !important;
   padding: 5px !important;
 }
 
-/* Images: blocky retro filter */
 img, video {
-  border: 2px solid #FFFF00 !important; /* Yellow border around media */
+  border: 2px solid var(--media-border) !important;
   filter: contrast(150%) saturate(200%) grayscale(20%) sepia(10%) !important;
   image-rendering: pixelated !important;
 }
 
-/* Scrollbars */
 ::-webkit-scrollbar {
   width: 16px !important;
-  background-color: #000000 !important;
-  border-left: 2px solid #FFFFFF !important;
+  background-color: var(--bg-color) !important;
+  border-left: 2px solid var(--text-color) !important;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #00FFFF !important;
-  border: 2px solid #000000 !important;
+  background-color: var(--link-color) !important;
+  border: 2px solid var(--bg-color) !important;
 }
 ::-webkit-scrollbar-button {
   display: block !important;
-  background-color: #000000 !important;
-  border: 2px solid #00FFFF !important;
+  background-color: var(--bg-color) !important;
+  border: 2px solid var(--link-color) !important;
 }

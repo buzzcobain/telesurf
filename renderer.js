@@ -134,3 +134,49 @@ window.electronAPI.onTabClosed((tabId) => {
   tabs.delete(tabId);
   renderTabs();
 });
+
+// --- Settings & Themes Logic ---
+const settingsBtn = document.getElementById('settings-btn');
+const settingsModal = document.getElementById('settings-modal');
+const closeSettingsBtn = document.getElementById('close-settings');
+const themeOptions = document.querySelectorAll('.theme-option');
+
+let currentTheme = localStorage.getItem('tui-theme') || 'ceefax';
+
+function applyTheme(themeName) {
+  document.documentElement.className = '';
+  if (themeName !== 'ceefax') {
+    document.documentElement.classList.add(`theme-${themeName}`);
+  }
+  
+  themeOptions.forEach(opt => {
+    if (opt.getAttribute('data-theme') === themeName) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
+    }
+  });
+
+  // Notify main process to update the injected CSS in all WebContents
+  window.electronAPI.setTheme(themeName);
+}
+
+settingsBtn.addEventListener('click', () => {
+  settingsModal.classList.add('visible');
+});
+
+closeSettingsBtn.addEventListener('click', () => {
+  settingsModal.classList.remove('visible');
+});
+
+themeOptions.forEach(opt => {
+  opt.addEventListener('click', () => {
+    const theme = opt.getAttribute('data-theme');
+    currentTheme = theme;
+    localStorage.setItem('tui-theme', theme);
+    applyTheme(theme);
+  });
+});
+
+// Apply on load
+applyTheme(currentTheme);

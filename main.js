@@ -1,6 +1,11 @@
-const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session } = require('electron');
+const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+
+dialog.showErrorBox = function(title, content) {
+  fs.writeFileSync('crash.log', `Dialog Error:\nTitle: ${title}\nContent: ${content}\n`);
+  console.error(`Dialog Error:\nTitle: ${title}\nContent: ${content}`);
+};
 
 process.on('uncaughtException', (err) => {
   fs.writeFileSync('crash.log', 'Uncaught Exception: ' + err.stack);
@@ -25,8 +30,16 @@ try { tuiCss = fs.readFileSync(cssPath, 'utf8'); } catch(e) {}
 
 const windows = new Map(); // winId -> { window, tabs, activeTabId, tabCounter }
 
+let currentTheme = 'ceefax';
+
 function applyTuiTheme(webContents) {
   webContents.insertCSS(tuiCss);
+  webContents.executeJavaScript(`
+    document.documentElement.className = '';
+    if ('${currentTheme}' !== 'ceefax') {
+      document.documentElement.classList.add('theme-${currentTheme}');
+    }
+  `).catch(() => {});
 }
 
 function createTab(winId, url = 'https://duckduckgo.com') {
@@ -306,3 +319,20 @@ ipcMain.handle('get-current-url', (event) => {
 ipcMain.on('ui-new-tab', (event) => createTab(event.sender.getOwnerBrowserWindow().id));
 ipcMain.on('ui-switch-tab', (event, tabId) => switchTab(event.sender.getOwnerBrowserWindow().id, tabId));
 ipcMain.on('ui-close-tab', (event, tabId) => closeTab(event.sender.getOwnerBrowserWindow().id, tabId));
+
+ipcMain.on('set-theme', (event, theme) => {
+  currentTheme = theme;
+  const winId = event.sender.getOwnerBrowserWindow().id;
+  const winState = windows.get(winId);
+  if (winState) {
+    // Notify all background WebContents to update their root class
+    winState.tabs.forEach((view) => {
+      view.webContents.executeJavaScript(`
+        document.documentElement.className = '';
+        if ('${theme}' !== 'ceefax') {
+          document.documentElement.classList.add('theme-${theme}');
+        }
+      `).catch(() => {});
+    });
+  }
+});

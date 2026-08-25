@@ -17,11 +17,13 @@ To fix this, I had to bake in some serious stealth tech. Telesurf uses the absol
 
 ## Features
 
-- **Global TUI Injection**: Aggressively overrides standard web styling to force a monospace, Dracula-inspired high contrast color scheme.
-- **Structural Borders**: Automatically wraps `div`, `section`, `main` and other semantic tags in retro containment boxes.
+- **Global TUI Injection**: Aggressively overrides standard web styling to force a monospace, Teletext/Ceefax-inspired high contrast color scheme.
+- **Structural Borders**: Automatically wraps semantic tags in retro containment boxes.
 - **Modern Engine**: Built on Electron 32 (Chromium 128) for 100% web compatibility.
 - **Stealth Mode**: Leverages clean User-Agent resolution and native C++ `AutomationControlled` flags to easily bypass strict CDN bot protections.
-- **DuckDuckGo Fallback**: Address bar acts as a hybrid URL/Search bar.
+- **Native Ad & Tracker Blocking**: Integrates `@ghostery/adblocker-electron` to massively speed up browsing and block spyware at the network layer.
+- **Security Hardened**: Implements OS-level sandboxing, context isolation, and native popup interception.
+- **DuckDuckGo Fallbacks**: Address bar acts as a hybrid URL/Search bar.
 - **Keyboard Navigation**:
   - `Cmd/Ctrl + T`: New Tab
   - `Cmd/Ctrl + W`: Close Tab

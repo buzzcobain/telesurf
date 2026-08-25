@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   newTab: () => ipcRenderer.send('ui-new-tab'),
   switchTab: (id) => ipcRenderer.send('ui-switch-tab', id),
   closeTab: (id) => ipcRenderer.send('ui-close-tab', id),
+  setTheme: (theme) => ipcRenderer.send('set-theme', theme),
 
   // Events from main process
   onUrlUpdated: (callback) => ipcRenderer.on('url-updated', (_event, url) => callback(url)),
