@@ -47,17 +47,21 @@
   \ \  __\  \ \ \ \ \  __ \\ \___  \\ \ \_\ \  
    \ \_____\ \ \_\ \ \_\ \_\\/\_____\\ \_____\ 
     \/_____/  \/_/  \/_/\/_/ \/_____/ \/_____/ 
-                                               
-           Welcome to Telesurf
-      
-         * Dave is amazing in the art *
 </pre>
+<h2>* Dave is amazing *</h2>
+<div style="margin: 20px 0;">
+  <!-- This will automatically be pixelated by our TUI engine! -->
+  <img id="random-art" alt="Random Pixel Art" style="border: 2px solid #00FFFF;" />
+</div>
 <div>
   <a href="dashboard.html" class="btn">DASHBOARD</a>
   <a href="readme.html" class="btn">README</a>
 </div>
 
 <script>
+  // Ensure a truly random image each load
+  document.getElementById('random-art').src = `https://picsum.photos/400/300?random=${Math.random()}`;
+  
   // Force links to trigger Electron navigation inside the tab
   document.querySelectorAll('.btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
