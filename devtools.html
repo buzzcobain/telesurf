@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Telesurf Dev Tools</title>
+  <style>
+    body {
+      background-color: #000000;
+      color: #FFFFFF;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .header {
+      background-color: #0000FF;
+      color: #FFFFFF;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      border-bottom: 2px solid #00FFFF;
+      display: flex;
+    }
+    
+    .tab-btn {
+      background: none;
+      border: 1px solid #FFFFFF;
+      color: #FFFFFF;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      margin-right: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background-color: #00FFFF;
+      color: #000000;
+      font-weight: bold;
+    }
+    
+    .content-area {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    
+    .log-line {
+      margin-bottom: 5px;
+      border-bottom: 1px dashed #333;
+      padding-bottom: 3px;
+      word-wrap: break-word;
+    }
+    
+    .level-0 { color: #00FF00; } /* Info */
+    .level-1 { color: #FFFF00; } /* Warning */
+    .level-2 { color: #FF0000; } /* Error */
+    .level-3 { color: #00FFFF; } /* Debug */
+    
+    .network-req {
+      margin-bottom: 5px;
+      padding: 5px;
+    }
+    .network-ok { color: #00FF00; }
+    .network-err { color: #FF0000; background-color: #550000; }
+    
+    #console-tab, #network-tab {
+      display: none;
+    }
+    #console-tab.active, #network-tab.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="header">
+    <button class="tab-btn active" id="btn-console" onclick="switchTab('console')">CONSOLE</button>
+    <button class="tab-btn" id="btn-network" onclick="switchTab('network')">NETWORK</button>
+  </div>
+
+  <div class="content-area">
+    <div id="console-tab" class="active"></div>
+    <div id="network-tab"></div>
+  </div>
+
+  <script>
+    const consoleDiv = document.getElementById('console-tab');
+    const networkDiv = document.getElementById('network-tab');
+    
+    function switchTab(tab) {
+      document.getElementById('btn-console').className = 'tab-btn' + (tab === 'console' ? ' active' : '');
+      document.getElementById('btn-network').className = 'tab-btn' + (tab === 'network' ? ' active' : '');
+      
+      consoleDiv.className = tab === 'console' ? 'active' : '';
+      networkDiv.className = tab === 'network' ? 'active' : '';
+    }
+
+    if (window.electronAPI) {
+      window.electronAPI.onDevToolsConsole((data) => {
+        const div = document.createElement('div');
+        div.className = 'log-line level-' + data.level;
+        div.innerText = `[L${data.line}] ${data.message}`;
+        consoleDiv.appendChild(div);
+        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+      });
+
+      window.electronAPI.onDevToolsNetwork((data) => {
+        const div = document.createElement('div');
+        div.className = 'network-req ' + (data.error || (data.statusCode >= 400) ? 'network-err' : 'network-ok');
+        
+        let status = data.error ? data.error : (data.statusCode || '???');
+        div.innerText = `${data.method} [${status}] ${data.url}`;
+        
+        networkDiv.appendChild(div);
+        networkDiv.scrollTop = networkDiv.scrollHeight;
+      });
+    }
+  </script>
+</body>
+</html>

@@ -80,6 +80,50 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   const tabId = ++winState.tabCounter;
   view.webContents.on('console-message', (event, level, message, line, sourceId) => {
     console.log(`[Renderer] ${message} (line ${line})`);
+    // Send to devtools if open
+    if (winState.devToolsWin && !winState.devToolsWin.isDestroyed()) {
+      winState.devToolsWin.webContents.send('devtools-console', { level, message, line, sourceId });
+    }
+  });
+
+  // Track network requests
+  view.webContents.session.webRequest.onCompleted((details) => {
+    if (winState.devToolsWin && !winState.devToolsWin.isDestroyed()) {
+      winState.devToolsWin.webContents.send('devtools-network', {
+        url: details.url,
+        method: details.method,
+        statusCode: details.statusCode,
+        resourceType: details.resourceType
+      });
+    }
+  });
+  
+  view.webContents.session.webRequest.onErrorOccurred((details) => {
+    if (winState.devToolsWin && !winState.devToolsWin.isDestroyed()) {
+      winState.devToolsWin.webContents.send('devtools-network', {
+        url: details.url,
+        method: details.method,
+        error: details.error,
+        resourceType: details.resourceType
+      });
+    }
+  });
+
+  // Context Menu
+  view.webContents.on('context-menu', (event, params) => {
+    const { Menu } = require('electron');
+    const menu = Menu.buildFromTemplate([
+      { 
+        label: 'Telesurf Dev Tools', 
+        click: () => {
+          openDevTools(winId);
+        }
+      },
+      { type: 'separator' },
+      { label: 'Copy', role: 'copy' },
+      { label: 'Paste', role: 'paste' }
+    ]);
+    menu.popup();
   });
 
   windows.get(winId).tabs.set(tabId, view);
@@ -116,6 +160,33 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   view.webContents.loadURL(url, { userAgent: cleanUA });
   switchTab(winId, tabId);
   return tabId;
+}
+
+function openDevTools(winId) {
+  const winState = windows.get(winId);
+  if (!winState) return;
+
+  if (winState.devToolsWin && !winState.devToolsWin.isDestroyed()) {
+    winState.devToolsWin.focus();
+    return;
+  }
+
+  winState.devToolsWin = new BrowserWindow({
+    width: 600,
+    height: 800,
+    title: 'TELESURF DEV TOOLS',
+    backgroundColor: '#000000',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  winState.devToolsWin.loadFile('devtools.html');
+  winState.devToolsWin.on('closed', () => {
+    winState.devToolsWin = null;
+  });
 }
 
 function switchTab(winId, tabId) {

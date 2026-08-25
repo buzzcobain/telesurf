@@ -33,5 +33,9 @@ if (window.location.protocol === 'file:') {
     onActiveTabChanged: (callback) => ipcRenderer.on('active-tab-changed', (_event, id) => callback(id)),
     onThemeChanged: (callback) => ipcRenderer.on('theme-changed', (_event, theme) => callback(theme)),
     onDashboardChanged: (callback) => ipcRenderer.on('dashboard-changed', (_event, config) => callback(config)),
+    
+    // DevTools events
+    onDevToolsConsole: (callback) => ipcRenderer.on('devtools-console', (_event, data) => callback(data)),
+    onDevToolsNetwork: (callback) => ipcRenderer.on('devtools-network', (_event, data) => callback(data))
   });
 }
