@@ -142,6 +142,7 @@
           window.electronAPI.getWeatherData().then(data => {
             console.log("Got weather data:", data);
             const content = document.getElementById('weather-content');
+            content.classList.remove('loading');
             if (data.success) {
               const codeMap = {
                 0: 'CLEAR SKY', 1: 'MAINLY CLEAR', 2: 'PARTLY CLOUDY', 3: 'OVERCAST',
@@ -173,23 +174,37 @@
         if (window.electronAPI && window.electronAPI.getSportsData) {
           window.electronAPI.getSportsData(config.team).then(data => {
             const content = document.getElementById('sports-content');
+            content.classList.remove('loading');
             if (data.success) {
               let html = `<div style="color: #00FFFF; margin-bottom: 10px;">TEAM: ${data.team}</div>`;
-              html += `<div style="color: #FF00FF; margin-bottom: 15px;">STADIUM: ${data.stadium}</div>`;
               
-              if (data.results && data.results.length > 0) {
-                html += `<table>`;
-                data.results.forEach(res => {
-                  html += `<tr>
-                    <td style="color: #00FF00;">${res.date}</td>
-                    <td style="color: #FFFFFF;">${res.event}</td>
-                    <td class="score">${res.homeScore} - ${res.awayScore}</td>
-                  </tr>`;
-                });
-                html += `</table>`;
+              html += `<div style="color: #FFFFFF; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">LAST MATCH:</div>`;
+              if (data.lastEvent) {
+                const e = data.lastEvent;
+                const venue = e.isHome ? '(H)' : '(A)';
+                let resColor = '#FFFF00'; // Draw
+                const ourScore = e.isHome ? e.homeScore : e.awayScore;
+                const theirScore = e.isHome ? e.awayScore : e.homeScore;
+                if (parseInt(ourScore) > parseInt(theirScore)) resColor = '#00FF00'; // Win
+                if (parseInt(ourScore) < parseInt(theirScore)) resColor = '#FF0000'; // Loss
+                
+                html += `<div style="color: #CCCCCC;">${e.date}</div>`;
+                html += `<div>vs <span style="color: #00FFFF;">${e.opponent}</span> ${venue}</div>`;
+                html += `<div>SCORE: <span style="color: ${resColor}; font-weight:bold;">${e.homeScore} - ${e.awayScore}</span></div>`;
               } else {
-                html += `<div style="color: #FFFF00;">NO RECENT RESULTS</div>`;
+                html += `<div style="color: #888888;">NO DATA</div>`;
               }
+
+              html += `<div style="color: #FFFFFF; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">NEXT MATCH:</div>`;
+              if (data.nextEvent) {
+                const e = data.nextEvent;
+                const venue = e.isHome ? '(H)' : '(A)';
+                html += `<div style="color: #CCCCCC;">${e.date}</div>`;
+                html += `<div>vs <span style="color: #00FFFF;">${e.opponent}</span> ${venue}</div>`;
+              } else {
+                html += `<div style="color: #888888;">NO DATA</div>`;
+              }
+
               content.innerHTML = html;
             } else {
               content.innerHTML = `<span class="error">${data.error}</span>`;
