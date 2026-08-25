@@ -2,7 +2,7 @@
   "name": "telesurf-browser",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
     "test:ui": "playwright test tests/browser.spec.js",

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #00FF00;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      overflow: hidden;
+    }
+    h2 {
+      margin: 10px 0 20px 0;
+      text-transform: uppercase;
+      font-size: 24px;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px #000;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px 20px;
+      padding: 12px 24px;
+      background-color: #000;
+      color: #00FFFF;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid #00FFFF;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #00FFFF;
+      color: #000;
+    }
+    #teletext-canvas {
+      border: 4px solid #333;
+      margin-bottom: 30px;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+
+<h2>* Dave is amazing *</h2>
+
+<!-- The main event teletext canvas -->
+<canvas id="teletext-canvas" width="640" height="480"></canvas>
+
+<div>
+  <a href="dashboard.html" class="btn">DASHBOARD</a>
+  <a href="readme.html" class="btn">README</a>
+</div>
+
+<script>
+  // Teletext rendering logic
+  const canvas = document.getElementById('teletext-canvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  
+  // Teletext palette (Black, Red, Green, Yellow, Blue, Magenta, Cyan, White)
+  const palette = [
+    {r: 0, g: 0, b: 0},
+    {r: 255, g: 0, b: 0},
+    {r: 0, g: 255, b: 0},
+    {r: 255, g: 255, b: 0},
+    {r: 0, g: 0, b: 255},
+    {r: 255, g: 0, b: 255},
+    {r: 0, g: 255, b: 255},
+    {r: 255, g: 255, b: 255}
+  ];
+
+  function getNearestColor(r, g, b) {
+    let minDistance = Infinity;
+    let nearest = palette[0];
+    for (let c of palette) {
+      const dist = Math.pow(c.r - r, 2) + Math.pow(c.g - g, 2) + Math.pow(c.b - b, 2);
+      if (dist < minDistance) {
+        minDistance = dist;
+        nearest = c;
+      }
+    }
+    return `rgb(${nearest.r}, ${nearest.g}, ${nearest.b})`;
+  }
+
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.onload = () => {
+    // Determine block size (teletext character size approximation)
+    const blockWidth = 8;
+    const blockHeight = 10;
+    
+    const tinyW = Math.floor(canvas.width / blockWidth);
+    const tinyH = Math.floor(canvas.height / blockHeight);
+    
+    // Draw onto tiny off-screen canvas
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = tinyW;
+    offCanvas.height = tinyH;
+    const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+    offCtx.drawImage(img, 0, 0, tinyW, tinyH);
+    
+    const imgData = offCtx.getImageData(0, 0, tinyW, tinyH).data;
+    
+    // Draw chunky Teletext blocks
+    for (let y = 0; y < tinyH; y++) {
+      for (let x = 0; x < tinyW; x++) {
+        const i = (y * tinyW + x) * 4;
+        const color = getNearestColor(imgData[i], imgData[i+1], imgData[i+2]);
+        ctx.fillStyle = color;
+        ctx.fillRect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
+      }
+    }
+  };
+  img.src = `https://picsum.photos/640/480?random=${Math.random()}`;
+
+  // Force links to trigger Electron navigation inside the tab
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = btn.getAttribute('href');
+      const url = new URL(target, window.location.href).href;
+      if (window.electronAPI && window.electronAPI.navigate) {
+        window.electronAPI.navigate(url);
+      } else {
+        window.location.href = target;
+      }
+    });
+  });
+</script>
+</body>
+</html>
