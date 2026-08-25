@@ -1,7 +1,7 @@
-/* TUI Theme - Vibrant & Colorful */
+/* TELETEXT / CEEFAX THEME */
 
 * {
-  font-family: "Courier New", Courier, monospace !important;
+  font-family: 'VT323', 'Courier New', Courier, monospace !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   text-shadow: none !important;
@@ -14,90 +14,102 @@
 
 /* Deep space background, high contrast white text */
 body {
-  background-color: #1A1A24 !important;
-  color: #F8F8F2 !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 /* Force backgrounds and add structural borders */
 div, section, article, nav, header, footer, main, aside, ul, form {
-  background-color: #1A1A24 !important;
-  color: #F8F8F2 !important;
-  border: 1px solid #44475A !important; /* Subtle box around every block */
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #0000FF !important; /* Blue blocky borders */
   padding: 4px !important;
   margin: 2px !important;
 }
 
-/* Links (Cyan - passes WCAG contrast on #1A1A24) */
+/* Links (Cyan) */
 a {
-  color: #8BE9FD !important;
+  color: #00FFFF !important;
   text-decoration: underline !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
 }
 a:hover {
-  background-color: #8BE9FD !important;
-  color: #1A1A24 !important;
+  background-color: #00FFFF !important;
+  color: #000000 !important;
   text-decoration: none !important;
 }
 
-/* Headings (Orange - passes WCAG contrast) */
+/* Headings (Yellow) */
 h1, h2, h3, h4, h5, h6 {
   font-weight: bold !important;
   text-transform: uppercase !important;
-  color: #FFB86C !important;
-  border-bottom: 1px dashed #FFB86C !important;
-  padding-bottom: 2px !important;
+  color: #FFFF00 !important;
+  background-color: #0000FF !important;
+  padding: 4px !important;
+  margin-bottom: 8px !important;
+  border-bottom: none !important;
+  display: inline-block !important;
 }
 
 /* Inputs, Textareas, Buttons */
 input, textarea, select {
-  background-color: #282A36 !important;
-  color: #F1FA8C !important; /* Yellow text for inputs */
-  border: 1px solid #FF79C6 !important; /* Pink borders */
-  font-family: "Courier New", Courier, monospace !important;
+  background-color: #000000 !important;
+  color: #00FF00 !important; /* Green text for inputs */
+  border: 2px solid #FF00FF !important; /* Magenta borders */
+  font-family: 'VT323', 'Courier New', Courier, monospace !important;
   outline: none !important;
   padding: 4px !important;
+  text-transform: uppercase !important;
+  font-weight: bold !important;
 }
 
 input:focus, textarea:focus {
-  background-color: #44475A !important;
+  background-color: #0000FF !important;
+  color: #FFFFFF !important;
 }
 
 button {
-  background-color: #1A1A24 !important;
-  color: #FF79C6 !important;
-  border: 1px solid #FF79C6 !important;
+  background-color: #000000 !important;
+  color: #FF00FF !important;
+  border: 2px solid #FF00FF !important;
   text-transform: uppercase !important;
   cursor: pointer !important;
   padding: 4px 8px !important;
+  font-weight: bold !important;
 }
 
 button:hover {
-  background-color: #FF79C6 !important;
-  color: #1A1A24 !important;
+  background-color: #FF00FF !important;
+  color: #000000 !important;
 }
 
 /* Borders for cards/containers to simulate TUI panels */
 .card, [class*="card"], [class*="container"], [class*="panel"], [class*="box"] {
-  border: 1px solid #BD93F9 !important; /* Purple border for structure */
+  border: 2px solid #00FF00 !important; /* Green borders */
   margin: 5px !important;
   padding: 5px !important;
 }
 
-/* Images: subtle retro filter */
+/* Images: blocky retro filter */
 img, video {
-  border: 1px solid #BD93F9 !important;
-  filter: contrast(120%) saturate(150%) !important;
+  border: 2px solid #FFFF00 !important; /* Yellow border around media */
+  filter: contrast(150%) saturate(200%) grayscale(20%) sepia(10%) !important;
+  image-rendering: pixelated !important;
 }
 
 /* Scrollbars */
 ::-webkit-scrollbar {
-  width: 12px !important;
-  background-color: #1A1A24 !important;
+  width: 16px !important;
+  background-color: #000000 !important;
+  border-left: 2px solid #FFFFFF !important;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #FF79C6 !important;
+  background-color: #00FFFF !important;
+  border: 2px solid #000000 !important;
 }
 ::-webkit-scrollbar-button {
   display: block !important;
-  background-color: #1A1A24 !important;
-  border: 1px solid #FF79C6 !important;
+  background-color: #000000 !important;
+  border: 2px solid #00FFFF !important;
 }
