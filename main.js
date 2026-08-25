@@ -1,6 +1,8 @@
 const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { ElectronBlocker } = require('@ghostery/adblocker-electron');
+const fetch = require('cross-fetch');
 
 app.name = 'Google Chrome';
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled');
@@ -214,6 +216,12 @@ app.whenReady().then(() => {
   const defaultUA = session.defaultSession.getUserAgent();
   cleanUA = defaultUA.replace(/Electron\/[0-9\.]+ /g, '').replace(/tui-browser\/[0-9\.]+ /g, '');
   app.userAgentFallback = cleanUA;
+
+  // Initialize Global Ad and Tracker Blocker
+  ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+    blocker.enableBlockingInSession(session.defaultSession);
+    console.log('🛡️ Ghostery Ad and Tracker blocker enabled globally.');
+  });
 
   setupMenu();
   createWindow();
