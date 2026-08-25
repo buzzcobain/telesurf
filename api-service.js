@@ -93,6 +93,7 @@ async function fetchSports(teamName) {
       success: true,
       team: sanitizeHTML(team.strTeam),
       stadium: sanitizeHTML(team.strStadium),
+      badge: team.strBadge, // URL to the logo image
       lastEvent,
       nextEvent
     };

@@ -151,11 +151,32 @@
                 80: 'RAIN SHOWERS', 95: 'THUNDERSTORM'
               };
               const desc = codeMap[data.code] || 'UNKNOWN';
+              
+              let asciiArt = "";
+              if ([0, 1].includes(data.code)) {
+                asciiArt = "  \\   /  \n   .-.   \n- (   ) -\n   `-`   \n  /   \\  ";
+              } else if ([2, 3, 45, 48].includes(data.code)) {
+                asciiArt = "   .--.  \n .(    ).\n(___.__)_)";
+              } else if ([51, 53, 61, 63, 65, 80].includes(data.code)) {
+                asciiArt = "   .--.  \n .(    ).\n(___.__)_)\n ' ' ' ' \n  ' ' ' '";
+              } else if ([71].includes(data.code)) {
+                asciiArt = "   .--.  \n .(    ).\n(___.__)_)\n *  *  * \n  *  *  *";
+              } else if ([95].includes(data.code)) {
+                asciiArt = "   .--.  \n .(    ).\n(___.__)_)\n   /     \n  /      ";
+              } else {
+                asciiArt = "   ???   ";
+              }
+
               content.innerHTML = `
                 <div style="font-size: 22px; color: #00FFFF; margin-bottom: 10px;">${data.city.toUpperCase()}</div>
-                <div style="font-size: 32px; color: #FFFF00; margin-bottom: 10px;">${data.temp}°C</div>
-                <div style="color: #00FF00; margin-bottom: 5px;">COND: ${desc}</div>
-                <div style="color: #FF00FF;">WIND: ${data.wind} km/h</div>
+                <div style="display: flex; align-items: center;">
+                  <pre style="color: #FFFF00; font-weight: bold; margin: 0 20px 0 0; font-size: 14px;">${asciiArt}</pre>
+                  <div>
+                    <div style="font-size: 32px; color: #FFFF00; margin-bottom: 10px;">${data.temp}°C</div>
+                    <div style="color: #00FF00; margin-bottom: 5px;">COND: ${desc}</div>
+                    <div style="color: #FF00FF;">WIND: ${data.wind} km/h</div>
+                  </div>
+                </div>
               `;
             } else {
               content.innerHTML = `<span class="error">${data.error}</span>`;
@@ -176,26 +197,40 @@
             const content = document.getElementById('sports-content');
             content.classList.remove('loading');
             if (data.success) {
-              let html = `<div style="color: #00FFFF; margin-bottom: 10px;">TEAM: ${data.team}</div>`;
+              let html = `<div style="display: flex; align-items: center; margin-bottom: 15px;">`;
+              if (data.badge) {
+                html += `<img src="${data.badge}" style="width: 50px; height: 50px; margin-right: 15px;" alt="Logo" />`;
+              }
+              html += `<div style="color: #00FFFF; font-size: 20px;">${data.team.toUpperCase()}</div></div>`;
               
-              html += `<div style="color: #FFFFFF; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">LAST MATCH:</div>`;
+              html += `<div style="color: #FFFFFF; font-weight: bold; margin-bottom: 5px;">LAST MATCH:</div>`;
               if (data.lastEvent) {
                 const e = data.lastEvent;
                 const venue = e.isHome ? '(H)' : '(A)';
                 let resColor = '#FFFF00'; // Draw
+                let resArt = " -----\n\n -----"; // Draw art
                 const ourScore = e.isHome ? e.homeScore : e.awayScore;
                 const theirScore = e.isHome ? e.awayScore : e.homeScore;
-                if (parseInt(ourScore) > parseInt(theirScore)) resColor = '#00FF00'; // Win
-                if (parseInt(ourScore) < parseInt(theirScore)) resColor = '#FF0000'; // Loss
+                if (parseInt(ourScore) > parseInt(theirScore)) {
+                  resColor = '#00FF00'; // Win
+                  resArt = " \\_._/ \n  | |  \n  ===  ";
+                } else if (parseInt(ourScore) < parseInt(theirScore)) {
+                  resColor = '#FF0000'; // Loss
+                  resArt = " \\   / \n  \\ /  \n  / \\  \n /   \\ ";
+                }
                 
+                html += `<div style="display: flex; align-items: center; margin-bottom: 15px;">`;
+                html += `<pre style="color: ${resColor}; font-weight: bold; margin: 0 15px 0 0; font-size: 12px; width: 60px;">${resArt}</pre>`;
+                html += `<div>`;
                 html += `<div style="color: #CCCCCC;">${e.date}</div>`;
                 html += `<div>vs <span style="color: #00FFFF;">${e.opponent}</span> ${venue}</div>`;
                 html += `<div>SCORE: <span style="color: ${resColor}; font-weight:bold;">${e.homeScore} - ${e.awayScore}</span></div>`;
+                html += `</div></div>`;
               } else {
-                html += `<div style="color: #888888;">NO DATA</div>`;
+                html += `<div style="color: #888888; margin-bottom: 15px;">NO DATA</div>`;
               }
 
-              html += `<div style="color: #FFFFFF; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">NEXT MATCH:</div>`;
+              html += `<div style="color: #FFFFFF; font-weight: bold; margin-bottom: 5px;">NEXT MATCH:</div>`;
               if (data.nextEvent) {
                 const e = data.nextEvent;
                 const venue = e.isHome ? '(H)' : '(A)';
