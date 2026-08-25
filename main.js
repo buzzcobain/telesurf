@@ -28,12 +28,22 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   const view = new WebContentsView({
     webPreferences: { 
       nodeIntegration: false, 
-      contextIsolation: true
+      contextIsolation: true,
+      sandbox: true,
+      safeDialogs: true,
+      disableBlinkFeatures: 'Auxclick'
     }
   });
   
   const tabId = ++winState.tabCounter;
   winState.tabs.set(tabId, view);
+
+  // Security: Intercept window.open() and target="_blank" to open in our own tab system
+  // instead of spawning unstyled, unmanaged Electron popup windows.
+  view.webContents.setWindowOpenHandler((details) => {
+    createTab(winId, details.url);
+    return { action: 'deny' };
+  });
   
   view.webContents.on('did-finish-load', () => {
     applyTuiTheme(view.webContents);
@@ -116,6 +126,9 @@ function createWindow() {
     backgroundColor: '#1A1A24',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true
     }
   });
 
