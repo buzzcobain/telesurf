@@ -19,14 +19,18 @@ To fix this, I had to bake in some serious stealth tech. Telesurf uses the absol
 
 - **Global TUI Injection**: Aggressively overrides standard web styling to force a monospace, Teletext/Ceefax-inspired high contrast color scheme.
 - **Regional Teletext Themes**: Hot-swap between 7 authentic international Teletext skins (Ceefax UK, Antiope France, ARD Videotext Germany, NOS Teletekst, Televideo Italy, SVT Text Sweden, Teletexto Spain).
-- **On-the-fly Pixelation Engine**: Automatically intercepts and crunches SVG logos and PNG images down to 40% resolution using an injected HTML5 canvas to perfectly match the jagged 8-bit aesthetic without breaking modern web frameworks.
+- **Customizable Widget Dashboard**: The default homepage is a responsive CSS Grid dashboard displaying your local Weather, favorite Sports team data, and Games. Configure which widgets are active in Settings and watch the layout reflow instantly.
+  - **Retro Weather**: Automatically geolocates based on your system timezone (or allows manual location overrides) and generates dynamic ASCII art for the current weather conditions (e.g. sun, clouds, lightning).
+  - **Retro Sports**: Hooks into TheSportsDB to fetch your favorite team's last and next match data, injecting their logo through the pixelator engine and calculating contextual Win/Loss ASCII art.
 - **Classic Teletext Games**: Playable HTML5 Canvas games built directly into the homepage, starting with a classic Teletext Snake.
+- **Teletext Developer Tools**: Right-click anywhere to open a custom, fully themed "Telesurf Dev Tools" window with Console and Network tabs that intercept and display browser logs and HTTP requests in retro glory.
+- **On-the-fly Pixelation Engine**: Automatically intercepts and crunches SVG logos and PNG images down to 40% resolution using an injected HTML5 canvas to perfectly match the jagged 8-bit aesthetic without breaking modern web frameworks.
+- **Auto Cookie Banner Handling**: Intelligently hunts down and auto-clicks "Decline All" or "Accept All" (configurable) on GDPR cookie popups.
+- **Security Hardened**: Implements OS-level sandboxing, context isolation, and native popup interception.
 - **Structural Borders**: Automatically wraps semantic tags in retro containment boxes.
 - **Modern Engine**: Built on Electron 32 (Chromium 128) for 100% web compatibility.
 - **Stealth Mode**: Leverages clean User-Agent resolution and native C++ `AutomationControlled` flags to easily bypass strict CDN bot protections.
 - **Native Ad & Tracker Blocking**: Integrates `@ghostery/adblocker-electron` to massively speed up browsing and block spyware at the network layer.
-- **Auto Cookie Banner Handling**: Intelligently hunts down and auto-clicks "Decline All" or "Accept All" (configurable) on GDPR cookie popups.
-- **Security Hardened**: Implements OS-level sandboxing, context isolation, and native popup interception.
 - **DuckDuckGo Fallbacks**: Address bar acts as a hybrid URL/Search bar.
 - **Keyboard Navigation**:
   - `Cmd/Ctrl + T`: New Tab
