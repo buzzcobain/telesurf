@@ -377,9 +377,14 @@ ipcMain.on('set-dashboard-config', (event, config) => {
 ipcMain.handle('get-dashboard-config', () => dashboardConfig);
 
 ipcMain.handle('get-weather-data', async () => {
-  // We use the system's timezone to guess the location dynamically
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
-  return await apiService.fetchWeather(timeZone);
+  // If user provided a location in settings, use that. Otherwise guess from timezone.
+  let locationQuery = dashboardConfig.location;
+  if (!locationQuery) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
+    const parts = timeZone.split('/');
+    locationQuery = parts[parts.length - 1].replace(/_/g, ' ');
+  }
+  return await apiService.fetchWeather(locationQuery);
 });
 
 ipcMain.handle('get-sports-data', async (event, team) => {

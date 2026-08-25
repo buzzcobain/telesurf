@@ -7,12 +7,8 @@ function sanitizeHTML(str) {
 }
 
 // Function to get weather
-async function fetchWeather(timeZone) {
+async function fetchWeather(city) {
   try {
-    // Attempt to parse city from TimeZone (e.g. Europe/London -> London)
-    const parts = timeZone.split('/');
-    let city = parts[parts.length - 1].replace(/_/g, ' ');
-
     // 1. Geocode city
     const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&format=json`);
     const geoData = await geoRes.json();

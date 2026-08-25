@@ -73,9 +73,17 @@
 <body>
   
   <div class="header">
-    <span class="page">P100</span>
-    <span class="title">TELESURF INDEX</span>
-    <span class="clock" id="clock">00:00:00</span>
+    <div>
+      <span class="page">P100</span>
+      <span class="title">TELESURF INDEX</span>
+    </div>
+    <div>
+      <span id="loc-display" style="color: #00FFFF; margin-right: 15px; font-size: 20px;">
+        <span id="loc-text">LONDON</span>
+        <span id="edit-loc" style="cursor: pointer; color: #FFFF00; margin-left: 5px;" title="Edit Location">✎</span>
+      </span>
+      <span class="clock" id="clock">00:00:00</span>
+    </div>
   </div>
 
   <div class="grid-container" id="grid">
@@ -90,12 +98,29 @@
     }, 1000);
 
     const grid = document.getElementById('grid');
+    const locText = document.getElementById('loc-text');
+    const editLocBtn = document.getElementById('edit-loc');
+
+    editLocBtn.addEventListener('click', () => {
+      if (window.electronAPI && window.electronAPI.showSettingsMenu) {
+        window.electronAPI.showSettingsMenu();
+      }
+    });
 
     async function initDashboard() {
       // 1. Get Config
-      let config = { weather: true, sports: true, games: true, team: 'Arsenal' };
+      let config = { weather: true, sports: true, games: true, team: 'Arsenal', location: '' };
       if (window.electronAPI && window.electronAPI.getDashboardConfig) {
         config = await window.electronAPI.getDashboardConfig();
+      }
+      
+      // Update header location
+      if (config.location) {
+        locText.innerText = config.location.toUpperCase();
+      } else {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
+        const parts = timeZone.split('/');
+        locText.innerText = parts[parts.length - 1].replace(/_/g, ' ').toUpperCase();
       }
 
       grid.innerHTML = ''; // Clear
