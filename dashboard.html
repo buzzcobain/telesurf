@@ -108,10 +108,14 @@
     });
 
     async function initDashboard() {
+      console.log("initDashboard called!");
+      console.log("electronAPI keys:", window.electronAPI ? Object.keys(window.electronAPI) : 'undefined');
       // 1. Get Config
       let config = { weather: true, sports: true, games: true, team: 'Arsenal', location: '' };
       if (window.electronAPI && window.electronAPI.getDashboardConfig) {
+        console.log("Requesting config from main process...");
         config = await window.electronAPI.getDashboardConfig();
+        console.log("Got config:", config);
       }
       
       // Update header location
@@ -127,13 +131,16 @@
 
       // 2. Weather Widget
       if (config.weather) {
+        console.log("Weather enabled, setting up widget...");
         const weatherDiv = document.createElement('div');
         weatherDiv.className = 'widget';
         weatherDiv.innerHTML = `<h2>LOCAL WEATHER</h2><div id="weather-content" class="loading">FETCHING DATA...</div>`;
         grid.appendChild(weatherDiv);
         
         if (window.electronAPI && window.electronAPI.getWeatherData) {
+          console.log("Calling getWeatherData...");
           window.electronAPI.getWeatherData().then(data => {
+            console.log("Got weather data:", data);
             const content = document.getElementById('weather-content');
             if (data.success) {
               const codeMap = {

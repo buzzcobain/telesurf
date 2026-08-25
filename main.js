@@ -68,6 +68,7 @@ function createTab(winId, url = 'https://duckduckgo.com') {
 
   const view = new WebContentsView({
     webPreferences: { 
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false, 
       contextIsolation: true,
       sandbox: true,
@@ -77,7 +78,11 @@ function createTab(winId, url = 'https://duckduckgo.com') {
   });
   
   const tabId = ++winState.tabCounter;
-  winState.tabs.set(tabId, view);
+  view.webContents.on('console-message', (event, level, message, line, sourceId) => {
+    console.log(`[Renderer] ${message} (line ${line})`);
+  });
+
+  windows.get(winId).tabs.set(tabId, view);
 
   // Security: Intercept window.open() and target="_blank" to open in our own tab system
   // instead of spawning unstyled, unmanaged Electron popup windows.
@@ -377,19 +382,24 @@ ipcMain.on('set-dashboard-config', (event, config) => {
 ipcMain.handle('get-dashboard-config', () => dashboardConfig);
 
 ipcMain.handle('get-weather-data', async () => {
-  // If user provided a location in settings, use that. Otherwise guess from timezone.
   let locationQuery = dashboardConfig.location;
   if (!locationQuery) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London';
     const parts = timeZone.split('/');
     locationQuery = parts[parts.length - 1].replace(/_/g, ' ');
   }
-  return await apiService.fetchWeather(locationQuery);
+  console.log('Fetching weather for:', locationQuery);
+  const result = await apiService.fetchWeather(locationQuery);
+  console.log('Weather result:', result);
+  return result;
 });
 
 ipcMain.handle('get-sports-data', async (event, team) => {
   const targetTeam = team || dashboardConfig.team || 'Arsenal';
-  return await apiService.fetchSports(targetTeam);
+  console.log('Fetching sports for:', targetTeam);
+  const result = await apiService.fetchSports(targetTeam);
+  console.log('Sports result:', result);
+  return result;
 });
 // ------------------------------
 
