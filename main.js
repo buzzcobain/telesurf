@@ -274,8 +274,26 @@ function createWindow() {
     windows.delete(winId);
   });
 
-  mainWindow.loadFile('index.html').then(() => {
-    createTab(winId, 'file://' + path.join(__dirname, 'dashboard.html'));
+  mainWindow.loadFile('index.html');
+  mainWindow.webContents.on('did-finish-load', () => {
+    let focusTabId = null;
+
+    if (dashboardConfig.startWithReadme) {
+      focusTabId = createTab(winId, 'file://' + path.join(__dirname, 'readme.html'));
+    }
+
+    if (dashboardConfig.startWithDashboard) {
+      const dbId = createTab(winId, 'file://' + path.join(__dirname, 'dashboard.html'));
+      focusTabId = dbId; // Dashboard takes focus
+    }
+
+    if (!dashboardConfig.startWithReadme && !dashboardConfig.startWithDashboard) {
+      focusTabId = createTab(winId, 'file://' + path.join(__dirname, 'welcome.html'));
+    }
+    
+    if (focusTabId) {
+      switchTab(winId, focusTabId);
+    }
   });
 }
 
@@ -438,7 +456,7 @@ ipcMain.on('set-cookie-pref', (event, pref) => {
 });
 
 // --- Dashboard IPC Handlers ---
-let dashboardConfig = { weather: true, sports: true, games: true, team: 'Arsenal' };
+let dashboardConfig = { weather: true, sports: true, games: true, team: 'Arsenal', startWithDashboard: true, startWithReadme: true };
 const apiService = require('./api-service.js');
 
 ipcMain.on('set-dashboard-config', (event, config) => {

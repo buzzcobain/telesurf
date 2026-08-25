@@ -56,6 +56,9 @@ const widgetGames = document.getElementById('widget-games');
 const sportsTeam = document.getElementById('sports-team');
 const weatherLocation = document.getElementById('weather-location');
 
+const startupDashboard = document.getElementById('startup-dashboard');
+const startupReadme = document.getElementById('startup-readme');
+
 let dashboardConfig = JSON.parse(localStorage.getItem('tui-dashboard') || '{}');
 // Default config
 if (dashboardConfig.weather === undefined) dashboardConfig.weather = true;
@@ -63,12 +66,16 @@ if (dashboardConfig.sports === undefined) dashboardConfig.sports = true;
 if (dashboardConfig.games === undefined) dashboardConfig.games = true;
 if (!dashboardConfig.team) dashboardConfig.team = 'Arsenal'; // Default for the sports API
 if (!dashboardConfig.location) dashboardConfig.location = '';
+if (dashboardConfig.startWithDashboard === undefined) dashboardConfig.startWithDashboard = true;
+if (dashboardConfig.startWithReadme === undefined) dashboardConfig.startWithReadme = true;
 
 widgetWeather.checked = dashboardConfig.weather;
 widgetSports.checked = dashboardConfig.sports;
 widgetGames.checked = dashboardConfig.games;
 sportsTeam.value = dashboardConfig.team;
 weatherLocation.value = dashboardConfig.location;
+startupDashboard.checked = dashboardConfig.startWithDashboard;
+startupReadme.checked = dashboardConfig.startWithReadme;
 
 function saveDashboardConfig() {
   dashboardConfig.weather = widgetWeather.checked;
@@ -76,6 +83,8 @@ function saveDashboardConfig() {
   dashboardConfig.games = widgetGames.checked;
   dashboardConfig.team = sportsTeam.value.trim() || 'Arsenal';
   dashboardConfig.location = weatherLocation.value.trim();
+  dashboardConfig.startWithDashboard = startupDashboard.checked;
+  dashboardConfig.startWithReadme = startupReadme.checked;
   
   localStorage.setItem('tui-dashboard', JSON.stringify(dashboardConfig));
   window.electronAPI.setDashboardConfig(dashboardConfig);
@@ -86,6 +95,8 @@ widgetSports.addEventListener('change', saveDashboardConfig);
 widgetGames.addEventListener('change', saveDashboardConfig);
 sportsTeam.addEventListener('input', saveDashboardConfig);
 weatherLocation.addEventListener('input', saveDashboardConfig);
+startupDashboard.addEventListener('change', saveDashboardConfig);
+startupReadme.addEventListener('change', saveDashboardConfig);
 
 // Set on load
 window.electronAPI.setDashboardConfig(dashboardConfig);
