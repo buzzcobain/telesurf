@@ -26,13 +26,18 @@ let cleanUA = '';
 
 const tuiCss = fs.readFileSync(path.join(__dirname, 'tui-theme.css'), 'utf-8');
 const pixelatorJs = fs.readFileSync(path.join(__dirname, 'pixelator.js'), 'utf-8');
+const cookieManagerJs = fs.readFileSync(path.join(__dirname, 'cookie-manager.js'), 'utf-8');
 
 const windows = new Map(); // winId -> { window, tabs, activeTabId, tabCounter }
 
 let currentTheme = 'ceefax';
+let cookiePref = 'decline';
 
 function applyTuiTheme(webContents) {
   webContents.insertCSS(tuiCss);
+  
+  const configuredCookieJs = cookieManagerJs.replace('__COOKIE_PREF__', cookiePref);
+
   webContents.executeJavaScript(`
     document.documentElement.className = '';
     if ('${currentTheme}' !== 'ceefax') {
@@ -45,6 +50,13 @@ function applyTuiTheme(webContents) {
       window._telesurfPixelatorInjected = true;
       try {
         ${pixelatorJs}
+      } catch(e) { console.error(e); }
+    })();
+
+    // Inject cookie manager script
+    (() => {
+      try {
+        ${configuredCookieJs}
       } catch(e) { console.error(e); }
     })();
   `).catch(() => {});
@@ -343,6 +355,10 @@ ipcMain.on('set-theme', (event, theme) => {
     // Also notify the main renderer to update its local state
     winState.window.webContents.send('theme-changed', theme);
   }
+});
+
+ipcMain.on('set-cookie-pref', (event, pref) => {
+  cookiePref = pref;
 });
 
 ipcMain.on('show-settings-menu', (event) => {

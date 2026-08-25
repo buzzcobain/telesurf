@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   switchTab: (id) => ipcRenderer.send('ui-switch-tab', id),
   closeTab: (id) => ipcRenderer.send('ui-close-tab', id),
   setTheme: (theme) => ipcRenderer.send('set-theme', theme),
+  setCookiePref: (pref) => ipcRenderer.send('set-cookie-pref', pref),
   showSettingsMenu: () => ipcRenderer.send('show-settings-menu'),
 
   // Events from main process

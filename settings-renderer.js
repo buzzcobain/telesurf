@@ -34,4 +34,19 @@ document.getElementById('close-btn').addEventListener('click', () => {
   window.close();
 });
 
+// --- Cookie Preferences Logic ---
+const cookiePrefSelect = document.getElementById('cookie-pref');
+let currentCookiePref = localStorage.getItem('tui-cookie-pref') || 'decline';
+cookiePrefSelect.value = currentCookiePref;
+
+// Set it on load so main process gets it
+window.electronAPI.setCookiePref(currentCookiePref);
+
+cookiePrefSelect.addEventListener('change', (e) => {
+  const pref = e.target.value;
+  currentCookiePref = pref;
+  localStorage.setItem('tui-cookie-pref', pref);
+  window.electronAPI.setCookiePref(pref);
+});
+
 updateSelection();

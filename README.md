@@ -18,10 +18,13 @@ To fix this, I had to bake in some serious stealth tech. Telesurf uses the absol
 ## Features
 
 - **Global TUI Injection**: Aggressively overrides standard web styling to force a monospace, Teletext/Ceefax-inspired high contrast color scheme.
+- **Regional Teletext Themes**: Hot-swap between 7 authentic international Teletext skins (Ceefax UK, Antiope France, ARD Videotext Germany, NOS Teletekst, Televideo Italy, SVT Text Sweden, Teletexto Spain).
+- **On-the-fly Pixelation Engine**: Automatically intercepts and crunches SVG logos and PNG images down to 40% resolution using an injected HTML5 canvas to perfectly match the jagged 8-bit aesthetic without breaking modern web frameworks.
 - **Structural Borders**: Automatically wraps semantic tags in retro containment boxes.
 - **Modern Engine**: Built on Electron 32 (Chromium 128) for 100% web compatibility.
 - **Stealth Mode**: Leverages clean User-Agent resolution and native C++ `AutomationControlled` flags to easily bypass strict CDN bot protections.
 - **Native Ad & Tracker Blocking**: Integrates `@ghostery/adblocker-electron` to massively speed up browsing and block spyware at the network layer.
+- **Auto Cookie Banner Handling**: Intelligently hunts down and auto-clicks "Decline All" or "Accept All" (configurable) on GDPR cookie popups.
 - **Security Hardened**: Implements OS-level sandboxing, context isolation, and native popup interception.
 - **DuckDuckGo Fallbacks**: Address bar acts as a hybrid URL/Search bar.
 - **Keyboard Navigation**:
