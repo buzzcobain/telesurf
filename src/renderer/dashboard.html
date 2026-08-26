@@ -248,85 +248,99 @@
         }
       }
 
-      // 4. Games Widget (Snake)
+      // 4. Games Widget (Bamboozle)
       if (config.games) {
         const gamesDiv = document.createElement('div');
         gamesDiv.className = 'widget';
         gamesDiv.innerHTML = `
-          <h2>TELETEXT SNAKE</h2>
-          <p style="color: #00FFFF; font-size: 14px; text-align: center;">Use Arrow Keys to play. Click to focus.</p>
-          <canvas id="snake-game" width="400" height="300" tabindex="0"></canvas>
-          <div id="snake-score" style="color: #FFFFFF; margin-top: 10px; font-weight: bold; text-align: center;">Score: 0</div>
+          <h2>BAMBOOZLE!</h2>
+          <p style="color: #00FF00; font-size: 14px; text-align: center;">Bamber Boozler's Teletext Quiz</p>
+          <div id="bamboozle-game" style="text-align: left; padding: 10px; min-height: 250px;">
+            <div id="b-question" style="color: #00FFFF; font-size: 18px; margin-bottom: 20px; font-weight: bold; line-height: 1.4;"></div>
+            <div id="b-options" style="display: flex; flex-direction: column; gap: 12px; font-size: 16px;"></div>
+            <div id="b-status" style="margin-top: 20px; font-weight: bold; text-align: center; font-size: 18px;"></div>
+          </div>
         `;
         grid.appendChild(gamesDiv);
-        initSnake();
+        initBamboozle();
       }
     }
 
-    // Snake Logic
-    function initSnake() {
-      const canvas = document.getElementById('snake-game');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const scoreEl = document.getElementById('snake-score');
-      
-      const gridSize = 20;
-      let snake = [{x: 10, y: 10}];
-      let apple = {x: 15, y: 10};
-      let dx = 1, dy = 0, score = 0, gameInterval;
-      
-      function drawRect(x, y, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x * gridSize, y * gridSize, gridSize - 1, gridSize - 1);
+    // Bamboozle Logic
+    function initBamboozle() {
+      const qEl = document.getElementById('b-question');
+      const optsEl = document.getElementById('b-options');
+      const statusEl = document.getElementById('b-status');
+      if (!qEl) return;
+
+      const questions = [
+        { q: "What is the capital of France?", opts: ["Berlin", "Madrid", "Paris", "Rome"], a: 2 },
+        { q: "Which planet is known as the Red Planet?", opts: ["Venus", "Mars", "Jupiter", "Saturn"], a: 1 },
+        { q: "What year did the Titanic sink?", opts: ["1912", "1905", "1923", "1898"], a: 0 },
+        { q: "Who painted the Mona Lisa?", opts: ["Van Gogh", "Da Vinci", "Picasso", "Rembrandt"], a: 1 },
+        { q: "What is the largest ocean on Earth?", opts: ["Atlantic", "Indian", "Arctic", "Pacific"], a: 3 },
+        { q: "Which element has the chemical symbol 'O'?", opts: ["Gold", "Oxygen", "Osmium", "Oganesson"], a: 1 },
+        { q: "How many continents are there?", opts: ["5", "6", "7", "8"], a: 2 },
+        { q: "Who wrote 'Romeo and Juliet'?", opts: ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"], a: 1 }
+      ];
+
+      const colors = ['#FF0000', '#00FF00', '#FFFF00', '#00FFFF']; // Red, Green, Yellow, Cyan
+      let currentQ = 0;
+      let score = 0;
+
+      // Shuffle questions
+      for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
       }
-      
-      function resetGame() {
-        snake = [{x: 10, y: 10}]; apple = {x: 15, y: 10};
-        dx = 1; dy = 0; score = 0;
-        scoreEl.innerText = `Score: ${score}`;
+
+      function loadQuestion() {
+        if (currentQ >= questions.length) {
+          qEl.innerHTML = `Quiz Complete!`;
+          optsEl.innerHTML = '';
+          statusEl.style.color = '#FFFF00';
+          statusEl.innerHTML = `You scored ${score} / ${questions.length}!<br><br><button onclick="window.location.reload()" style="background:#000; color:#00FFFF; border:2px solid #00FFFF; padding:5px 10px; cursor:pointer;">PLAY AGAIN</button>`;
+          return;
+        }
+
+        const data = questions[currentQ];
+        qEl.innerText = `Q${currentQ + 1}: ${data.q}`;
+        optsEl.innerHTML = '';
+        statusEl.innerText = '';
+
+        data.opts.forEach((opt, idx) => {
+          const btn = document.createElement('div');
+          btn.style.cursor = 'pointer';
+          btn.style.display = 'flex';
+          btn.style.alignItems = 'center';
+          btn.innerHTML = `<span style="display:inline-block; width:20px; height:20px; background-color:${colors[idx]}; margin-right:15px; border:2px solid #FFF;"></span> ${opt}`;
+          
+          btn.onclick = () => {
+            if (idx === data.a) {
+              score++;
+              statusEl.style.color = '#00FF00';
+              statusEl.innerText = "CORRECT!";
+            } else {
+              statusEl.style.color = '#FF0000';
+              statusEl.innerText = "WRONG! It was " + data.opts[data.a];
+            }
+            // Disable clicks
+            optsEl.style.pointerEvents = 'none';
+            setTimeout(() => {
+              optsEl.style.pointerEvents = 'auto';
+              currentQ++;
+              loadQuestion();
+            }, 1500);
+          };
+          
+          btn.onmouseover = () => btn.style.textDecoration = 'underline';
+          btn.onmouseout = () => btn.style.textDecoration = 'none';
+          
+          optsEl.appendChild(btn);
+        });
       }
-      
-      function update() {
-        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-        
-        if (head.x < 0 || head.x >= canvas.width/gridSize || head.y < 0 || head.y >= canvas.height/gridSize) { resetGame(); return; }
-        
-        for (let part of snake) {
-          if (part.x === head.x && part.y === head.y) { resetGame(); return; }
-        }
-        
-        snake.unshift(head);
-        
-        if (head.x === apple.x && head.y === apple.y) {
-          score += 10; scoreEl.innerText = `Score: ${score}`;
-          apple = { x: Math.floor(Math.random() * (canvas.width/gridSize)), y: Math.floor(Math.random() * (canvas.height/gridSize)) };
-        } else {
-          snake.pop();
-        }
-        
-        ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        drawRect(apple.x, apple.y, '#FF0000');
-        for (let i = 0; i < snake.length; i++) {
-          drawRect(snake[i].x, snake[i].y, i === 0 ? '#00FFFF' : '#00FF00');
-        }
-      }
-      
-      canvas.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -1; e.preventDefault(); }
-        if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = 1; e.preventDefault(); }
-        if (e.key === 'ArrowLeft' && dx === 0) { dx = -1; dy = 0; e.preventDefault(); }
-        if (e.key === 'ArrowRight' && dx === 0) { dx = 1; dy = 0; e.preventDefault(); }
-      });
-      
-      canvas.addEventListener('focus', () => { if(!gameInterval) gameInterval = setInterval(update, 100); });
-      canvas.addEventListener('blur', () => {
-        clearInterval(gameInterval); gameInterval = null;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#FFFFFF'; ctx.font = '20px "Courier New"'; ctx.textAlign = 'center';
-        ctx.fillText('CLICK TO PLAY', canvas.width/2, canvas.height/2);
-      });
-      
-      resetGame(); update(); canvas.dispatchEvent(new Event('blur'));
+
+      loadQuestion();
     }
 
     initDashboard();
